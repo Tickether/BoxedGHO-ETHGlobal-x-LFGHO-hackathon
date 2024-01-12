@@ -1,9 +1,10 @@
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            NEXT_PUBLIC_ALCHEMY_API_KEY: string
+            NEXT_PUBLIC_INFURA_API_KEY: string
             NEXT_PUBLIC_W3M_PROJECT_ID: string
             NEXT_PUBLIC_DECENT_API_KEY: string
+            NEXT_PUBLIC_ZERO_DEV_PROJECT_ID: string
         }
     }
 }
