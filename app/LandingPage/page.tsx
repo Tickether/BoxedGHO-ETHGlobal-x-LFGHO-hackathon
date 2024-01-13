@@ -24,7 +24,7 @@ function MiddlePart() {
             variant="ghost"
             className="border-2 border-solid font-semibold text-xl border-white"
           >
-            Lets Start
+            Lets'Start
           </Button>
         </div>
       </div>
