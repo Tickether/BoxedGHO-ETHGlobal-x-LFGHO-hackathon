@@ -2,10 +2,9 @@ import ConnectKit from "@/components/connectKit/ConnectKit";
 import Image from "next/image";
 import Navbar from "@/components/navbar/Navbar";
 
-
 export default function Home() {
   return (
-    <main className="flex min-h-screen item-center  w-[100vw] flex-col bg-[#232423]">
+    <main className="flex min-h-screen item-center  w-[100vw] flex-col bg-gradient-to-r from-slate-900 to-slate-700">
       <Navbar />
       <div className="text-white h-[80vh] flex flex-row justify-center items-center  ">
         <div className="max-w-[500px] flex flex-col  gap-9 ">
