@@ -9,7 +9,7 @@ export default function Home() {
         <div className="max-w-[500px] flex flex-col  gap-9 ">
           <div className="text-6xl font-semibold"> Easy, Fast & Secure</div>
           <div className="text-xl">
-            Convert , send Online Money Fast With BoxedGHO
+            Convert, Send GHO Cross-Chain Fast w/ BoxedGHO
           </div>
           <div>
             <button className="border-2 p-3 rounded-2xl hover:bg-white hover:text-black border-solid font-semibold text-xl border-white">
