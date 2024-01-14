@@ -1,4 +1,5 @@
 'use client'
+
 import { supportedSocialConnectors } from '@zerodev/wagmi/connectkit'
 import { supportedConnectors, getDefaultConfig, ConnectKitProvider } from 'connectkit'
 supportedConnectors.push(...supportedSocialConnectors)

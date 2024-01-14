@@ -1,3 +1,5 @@
+'use client'
+
 import { ChainId, TokenInfo, ethGasToken } from "@decent.xyz/box-common";
 import { polygonGasToken, usdcToken } from "../constants";
 import { Dispatch, PropsWithChildren, createContext, useReducer } from "react";

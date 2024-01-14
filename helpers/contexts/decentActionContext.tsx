@@ -1,3 +1,5 @@
+'use client'
+
 import { useBoxAction, UseBoxActionArgs } from "@decent.xyz/box-hooks";
 import { PropsWithChildren, createContext, useState } from "react";
 

@@ -1,6 +1,8 @@
 import ConnectKit from "@/components/connectKit/ConnectKit";
 import Image from "next/image";
 import Navbar from "@/components/navbar/Navbar";
+
+
 export default function Home() {
   return (
     <main className="flex min-h-screen item-center  w-[100vw] flex-col bg-[#232423]">

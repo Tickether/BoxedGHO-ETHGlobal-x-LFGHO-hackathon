@@ -1,3 +1,5 @@
+'use client'
+
 import { TokenSelectorComponent } from "./TokenSelectorComponent";
 import ChainSelectMenu from "./ChainSelectorMenu";
 import { useContext, useEffect, useState, Fragment } from "react";
