@@ -9,7 +9,7 @@ export default function Account() {
         <div className="w-[400px]  font-semibold flex justify-between">
           <span className="text-xl">Balance</span>
           <button className="border-2 p-3 rounded-2xl hover:bg-white hover:text-black border-solid font-semibold text-l border-white">
-            Buy GHO
+            💳 Buy GHO
           </button>
         </div>
         <div className="flex flex-col gap-3">
