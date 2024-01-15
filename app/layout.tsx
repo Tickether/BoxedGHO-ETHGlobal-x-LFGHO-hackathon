@@ -21,7 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <BoxContext>
-              {children}
+            {children}
           </BoxContext>
         </Providers>
       </body>
