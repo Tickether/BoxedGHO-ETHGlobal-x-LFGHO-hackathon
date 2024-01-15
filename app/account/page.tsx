@@ -1,6 +1,7 @@
 "use client";
 import Navbar from "@/components/navbar/Navbar";
 import Send from "@/components/send/Send";
+import BuyGHO from "@/components/buyGho/BuyGHO";
 import { useState } from "react";
 export default function Account() {
   const [openSendModal, setOpenSendModal] = useState<boolean>(false);
@@ -13,7 +14,12 @@ export default function Account() {
       <div className="text-white w-[700px] rounded-2xl h-[80vh] bg-slate-800 shadow-sm shadow-blue-500 gap-24 flex flex-col justify-center items-center mt-[20px]">
         <div className="w-[400px]  font-semibold flex justify-between items-center">
           <span className="text-xl">Balance</span>
-          <button className="border-2 p-3 flex items-center rounded-2xl hover:bg-slate-700  border-solid font-semibold text-l border-white">
+          <button
+            onClick={() => {
+              setOpenBuyModal(true);
+            }}
+            className="border-2 p-3 flex items-center rounded-2xl hover:bg-slate-700  border-solid font-semibold text-l border-white"
+          >
             💳 Buy GHO
           </button>
         </div>
@@ -42,6 +48,7 @@ export default function Account() {
         </div>
       </div>
       {openSendModal && <Send setOpenSendModal={setOpenSendModal} />}
+      {openBuyModal && <BuyGHO setOpenBuyModal={setOpenBuyModal} />}
     </main>
   );
 }

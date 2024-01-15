@@ -56,7 +56,7 @@ const SendToYourself = () => {
           </button>
         </div>
 
-        <div className="flex items-end w-[95%] justify-center mb-2 h-full">
+        <div className="flex items-end w-[95%] justify-center mt-10 mb-2 h-full">
           {/* progress bar  */}
           <div className="w-full bg-gray-200 rounded-full  h-2.5 ">
             <div
