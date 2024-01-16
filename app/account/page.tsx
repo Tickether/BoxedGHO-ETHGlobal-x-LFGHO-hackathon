@@ -24,11 +24,11 @@ export default function Account() {
 
   useEffect(() => {
     const getTokenRateUSD = async () => {
-      const TokenRateUSD = await getTokenUSD("ethereum", GHO_TESTNET);
+      const TokenRateUSD = await getTokenUSD();
       setTokenRateUSD(TokenRateUSD!);
     };
     getTokenRateUSD();
-  });
+  },[]);
 
   return (
     <main className="flex min-h-screen flex-col items-center  bg-gradient-to-r from-slate-900 to-slate-700">

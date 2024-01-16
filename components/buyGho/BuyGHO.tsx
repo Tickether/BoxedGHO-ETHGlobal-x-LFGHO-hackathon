@@ -30,6 +30,30 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
     }
   });
 
+  const postRamp = async (address: string, email: string, txn: string, ref: string, amountGHO: string, amountUSD: string, status: string) => {
+    try {
+      const res = await fetch('api/postRamp', {
+        method: 'POST',
+        headers: {
+        'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          address,
+          email,
+          txn,
+          ref, 
+          amountGHO, 
+          amountUSD,  
+          status,
+        })
+      }) 
+      const data =  await res.json()
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_TEST_KEY,
     tx_ref: `${"USD-GHO"}${Date.now()}`, //currency x timestaamp/datestamp
@@ -55,7 +79,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
           console.log(response);
           if (response.status == "successful") {
             //amount GHO sent to smart address
-            handleSellGHO();
+            handleSellGHO(response.flw_ref);
           }
           closePaymentModal(); // this will close the modal programmatically
           setOpenBuyModal(false);
@@ -66,15 +90,18 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
       });
     }
   };
-  const handleSellGHO = async () => {
+  const handleSellGHO = async (ref: string) => {
     const amountParsed = parseUnits(String(ghoamount)!, 18);
     const txnHash = await sellGHO(amountParsed!, `0x${address!.slice(2)}`);
-    return txnHash;
+    //save offchain depo info
+    if (txnHash) {
+      await postRamp( address!, email!, txnHash!, ref, ghoamount!, String(Number(ghoamount) + Number(ghoamount) * 0.06), 'success' )
+  }
   };
 
   useEffect(() => {
     const getTokenRateUSD = async () => {
-      const TokenRateUSD = await getTokenUSD("ethereum", GHO_TESTNET);
+      const TokenRateUSD = await getTokenUSD();
       setTokenRateUSD(TokenRateUSD!);
     };
     getTokenRateUSD();
@@ -147,7 +174,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
           <span className="text-blue-300">
             ${" "}
             {ghoamount == ""
-              ? "0"
+              ? "-"
               : Number(ghoamount) + Number(ghoamount) * 0.06}
           </span>
         </div>
