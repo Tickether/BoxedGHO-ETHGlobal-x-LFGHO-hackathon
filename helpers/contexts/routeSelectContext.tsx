@@ -5,21 +5,21 @@ import { polygonGasToken, usdcToken } from "../constants";
 import { Dispatch, PropsWithChildren, createContext, useReducer } from "react";
 
 export const chainIcons: { [key: number]: string } = {
-  [ChainId.ETHEREUM]: "/ethereum.svg",
-  [ChainId.OPTIMISM]: "/optimism.svg",
-  [ChainId.ARBITRUM]: "/arbitrum.svg",
-  [ChainId.POLYGON]: "/polygon.svg",
-  [ChainId.BASE]: "/base.png",
-  [ChainId.AVALANCHE]: "/avalanche.svg",
+  [ChainId.SEPOLIA]: "/ethereum.svg",
+  [ChainId.OPTIMISM_TESTNET]: "/optimism.svg",
+  [ChainId.ARBITRUM_TESTNET]: "/arbitrum.svg",
+  [ChainId.POLYGON_TESTNET]: "/polygon.svg",
+  [ChainId.BASE_TESTNET]: "/base.png",
+  [ChainId.AVALANCHE_TESTNET]: "/avalanche.svg",
 };
 
 export const chainNames: { [key: number]: string } = {
-  [ChainId.ETHEREUM]: "Ethereum",
-  [ChainId.OPTIMISM]: "OP Mainnet",
-  [ChainId.ARBITRUM]: "Arbitrum One",
-  [ChainId.POLYGON]: "Polygon",
-  [ChainId.BASE]: "Base",
-  [ChainId.AVALANCHE]: "Avalanche",
+  [ChainId.SEPOLIA]: "Ethereum",
+  [ChainId.OPTIMISM_TESTNET]: "OP Mainnet",
+  [ChainId.ARBITRUM_TESTNET]: "Arbitrum One",
+  [ChainId.POLYGON_TESTNET]: "Polygon",
+  [ChainId.BASE_TESTNET]: "Base",
+  [ChainId.AVALANCHE_TESTNET]: "Avalanche",
 };
 
 export type RouteVars = {
@@ -36,9 +36,9 @@ export const RouteSelectContext = createContext<{
   updateRouteVars: Dispatch<Partial<RouteVars>>;
 }>({
   routeVars: {
-    srcChain: ChainId.OPTIMISM,
+    srcChain: ChainId.OPTIMISM_TESTNET,
     srcToken: ethGasToken,
-    dstChain: ChainId.OPTIMISM,
+    dstChain: ChainId.OPTIMISM_TESTNET,
     dstToken: usdcToken,
     purchaseName: "",
     sameChain: false,
@@ -69,9 +69,9 @@ export function getDefaultToken(chainId: ChainId) {
 
 export default function RouteSelectProvider({ children }: PropsWithChildren) {
   const [routeVars, updateRouteVars] = useReducer(routeReducer, {
-    srcChain: ChainId.ARBITRUM,
+    srcChain: ChainId.ARBITRUM_TESTNET,
     srcToken: ethGasToken,
-    dstChain: ChainId.OPTIMISM,
+    dstChain: ChainId.OPTIMISM_TESTNET,
     dstToken: usdcToken,
     sameChain: false,
     purchaseName: "",

@@ -6,7 +6,7 @@ import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
 import { ZeroDevWeb3Auth } from "@zerodev/web3auth";
 import { getTokenUSD } from "@/utils/getTokenUSD";
-import { GHO_MAINNET } from "@/helpers/constants";
+import { GHO_TESTNET } from "@/helpers/constants";
 
 interface BuyGHOProps {
   setOpenBuyModal: (openSendModal: boolean) => void;
@@ -74,7 +74,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
 
   useEffect(() => {
     const getTokenRateUSD = async () => {
-      const TokenRateUSD = await getTokenUSD("ethereum", GHO_MAINNET);
+      const TokenRateUSD = await getTokenUSD("ethereum", GHO_TESTNET);
       setTokenRateUSD(TokenRateUSD!);
     };
     getTokenRateUSD();

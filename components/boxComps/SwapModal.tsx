@@ -41,7 +41,7 @@ export default function SwapModal({ connectedAddress, publicClient }: any) {
   const setSrcToken = (t: TokenInfo) => updateRouteVars({ srcToken: t });
   useEffect(() => {
     updateRouteVars({
-      srcChain: ChainId.ETHEREUM,
+      srcChain: ChainId.SEPOLIA,
       srcToken: ethGasToken,
     });
   });

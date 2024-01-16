@@ -6,7 +6,7 @@ export const formatFees = (
   bridgeFee: bigint,
   srcChain: ChainId,
 ) => {
-  const symbol = srcChain === ChainId.POLYGON ? "MATIC" : "ETH";
+  const symbol = srcChain === ChainId.POLYGON_TESTNET ? "MATIC" : "ETH";
   const format = (fee: bigint) => {
     return fee ? parseFloat(formatUnits(fee, 18)).toFixed(4) : fee;
   };

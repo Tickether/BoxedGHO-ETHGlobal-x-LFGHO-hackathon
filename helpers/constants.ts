@@ -9,18 +9,18 @@ export const polygonGasToken: TokenInfo = {
   name: "Matic",
   symbol: "MATIC",
   logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
-  chainId: ChainId.POLYGON,
+  chainId: ChainId.POLYGON_TESTNET,
   isNative: true,
 };
-export const GHO_MAINNET = "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f";
+export const GHO_TESTNET = "0xc4bF5CbDaBE595361438F8c6a187bDc330539c60";
 
 export const ghoToken: TokenInfo = {
-  address: GHO_MAINNET,
+  address: GHO_TESTNET,
   decimals: 18,
   name: "Gho Token",
   symbol: "GHO",
   logo: `https://assets.coingecko.com/coins/images/30663/standard/ghoaave.jpeg`,
-  chainId: ChainId.ETHEREUM,
+  chainId: ChainId.SEPOLIA,
   isNative: false,
 };
 
@@ -32,50 +32,33 @@ export const usdcToken: TokenInfo = {
   name: "USD Coin",
   symbol: "USDC",
   logo: `https://s3.coinmarketcap.com/static-gravity/image/5a8229787b5e4c809b5914eef709b59a.png`,
-  chainId: ChainId.OPTIMISM,
+  chainId: ChainId.OPTIMISM_TESTNET,
   isNative: false,
 };
 
 
 export const defaultAvailableChains = [
-  ChainId.ETHEREUM,
-  ChainId.OPTIMISM,
-  ChainId.ARBITRUM,
-  ChainId.POLYGON,
-  ChainId.BASE,
-  ChainId.AVALANCHE,
+  ChainId.SEPOLIA,
+  ChainId.OPTIMISM_TESTNET,
+  ChainId.ARBITRUM_TESTNET,
+  ChainId.POLYGON_TESTNET,
+  ChainId.BASE_TESTNET,
+  ChainId.AVALANCHE_TESTNET,
 ];
 
 export function getChainIcon(chainId: ChainId | number) {
   switch (chainId) {
-    case (ChainId.ETHEREUM):
+    case (ChainId.SEPOLIA):
       return '/ethereum.svg';
-    case (ChainId.OPTIMISM):
+    case (ChainId.OPTIMISM_TESTNET):
       return '/optimism.svg';
-    case (ChainId.ARBITRUM):
+    case (ChainId.ARBITRUM_TESTNET):
       return '/arbitrum.svg';
-    case (ChainId.POLYGON):
+    case (ChainId.POLYGON_TESTNET):
       return '/polygon.svg';
-    case (ChainId.BASE):
+    case (ChainId.BASE_TESTNET):
       return '/base.png';
-    case (ChainId.AVALANCHE):
+    case (ChainId.AVALANCHE_TESTNET):
       return '/avalanche.svg';
-  }
-}
-
-export function getChainBridge(chainId: ChainId | number) {
-  switch (chainId) {
-    case (ChainId.ETHEREUM):
-      return '0x7358Eb6EBEd017345940328ce20B5ddc2B91F9b0';
-    case (ChainId.OPTIMISM):
-      return '0x4F2540e751A77CF18B6A67Ce85466e47c222da4f';
-    case (ChainId.ARBITRUM):
-      return '0xcD7df361aA1dEBE7331a76fFFd7F457DE22400d1';
-    case (ChainId.POLYGON):
-      return '0xCCadF28d9c74c8D412feEcD86EA9B0a9CefF1B28';
-    case (ChainId.BASE):
-      return '0x3684e93AE82b40238911DC71c3875E08e33f4ddC';
-    case (ChainId.AVALANCHE):
-      return '0xF434cD4878d16811a2777D87873AF04ca6656F1B';
   }
 }

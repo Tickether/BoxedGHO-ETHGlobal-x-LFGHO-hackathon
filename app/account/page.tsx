@@ -4,14 +4,15 @@ import Send from "@/components/send/Send";
 import BuyGHO from "@/components/buyGho/BuyGHO";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
-import { GHO_MAINNET } from "@/helpers/constants";
-import Recive from "@/components/recive/Recive";
+import { GHO_TESTNET } from "@/helpers/constants";
 import { getTokenUSD } from "@/utils/getTokenUSD";
+import Receive from "@/components/receive/Receive";
+
 export default function Account() {
   const { address, isConnected } = useAccount();
 
   const [openSendModal, setOpenSendModal] = useState<boolean>(false);
-  const [openReciveModal, setOpenReciveModal] = useState<boolean>(false);
+  const [openReceiveModal, setOpenReceiveModal] = useState<boolean>(false);
   const [openBuyModal, setOpenBuyModal] = useState<boolean>(false);
   const [tokenRateUSD, setTokenRateUSD] = useState<number | null>(null);
 
@@ -23,7 +24,7 @@ export default function Account() {
 
   useEffect(() => {
     const getTokenRateUSD = async () => {
-      const TokenRateUSD = await getTokenUSD("ethereum", GHO_MAINNET);
+      const TokenRateUSD = await getTokenUSD("ethereum", GHO_TESTNET);
       setTokenRateUSD(TokenRateUSD!);
     };
     getTokenRateUSD();
@@ -75,7 +76,7 @@ export default function Account() {
           </button>
           <button
             onClick={() => {
-              setOpenReciveModal(true);
+              setOpenReceiveModal(true);
             }}
             className="border-2 p-3 rounded-2xl hover:bg-slate-700  border-solid font-semibold text-l border-white"
           >
@@ -85,7 +86,7 @@ export default function Account() {
       </div>
       {openSendModal && <Send setOpenSendModal={setOpenSendModal} />}
       {openBuyModal && <BuyGHO setOpenBuyModal={setOpenBuyModal} />}
-      {openReciveModal && <Recive setOpenReciveModal={setOpenReciveModal} />}
+      {openReceiveModal && <Receive setOpenReceiveModal={setOpenReceiveModal} />}
     </main>
   );
 }

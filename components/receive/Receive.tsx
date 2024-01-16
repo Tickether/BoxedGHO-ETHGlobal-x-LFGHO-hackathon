@@ -3,11 +3,12 @@ import Image from "next/image";
 import QRCode from "react-qr-code";
 import { toast, ToastContainer } from "react-toastify";
 interface BuyGHOProps {
-  setOpenReciveModal: (openSendModal: boolean) => void;
+  setOpenReceiveModal: (openReceiveModal: boolean) => void;
 }
 import { useAccount } from "wagmi";
-const BuyGHO = ({ setOpenReciveModal }: BuyGHOProps) => {
-  const { address } = useAccount();
+
+const Receive = ({ setOpenReceiveModal }: BuyGHOProps) => {
+  const { address, isConnected } = useAccount();
   const [copy, setCopy] = useState<boolean>(false);
   const Success = () =>
     toast("Copied...", {
@@ -25,7 +26,7 @@ const BuyGHO = ({ setOpenReciveModal }: BuyGHOProps) => {
       <button
         className="   w-[80%]  flex justify-end"
         onClick={() => {
-          setOpenReciveModal(false);
+          setOpenReceiveModal(false);
         }}
       >
         <Image src="/cancel.svg" alt="doggy" width={50} height={50} />
@@ -46,13 +47,15 @@ const BuyGHO = ({ setOpenReciveModal }: BuyGHOProps) => {
         </span>
         <div className="w-full bg-transparent flex justify-center">
           {" "}
-          <div className=" bg-white p-[16px]">
-            {address ? (
-              <QRCode value={address} className="h-[100px] w-[100px]" />
-            ) : (
-              "please connect your wallet"
-            )}
-          </div>
+          {isConnected ? (
+            <div className=" bg-white p-[16px]">
+              <QRCode value={address!} className="h-[100px] w-[100px]" />
+            </div>
+          ) : (
+            <div className="bg-blue-100 p-10">
+              <p className="text-l text-blue-900">Please Connect Wallet w/ Socials</p>
+            </div>
+          )}
         </div>
 
         <div className="group flex mb-5 w-full    justify-center relative  gap-3 items-center flex-col">
@@ -88,4 +91,4 @@ const BuyGHO = ({ setOpenReciveModal }: BuyGHOProps) => {
   );
 };
 
-export default BuyGHO;
+export default Receive;
