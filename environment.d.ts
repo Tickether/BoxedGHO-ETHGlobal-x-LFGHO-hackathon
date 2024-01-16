@@ -5,6 +5,9 @@ declare global {
             NEXT_PUBLIC_W3M_PROJECT_ID: string
             NEXT_PUBLIC_DECENT_API_KEY: string
             NEXT_PUBLIC_ZERO_DEV_PROJECT_ID: string
+            NEXT_PUBLIC_PRIVATE_KEY: `0x${string}`
+            NEXT_PUBLIC_FLUTTERWAVE_TEST_KEY: string
+            NEXT_PUBLIC_COINGECKO_API: string
         }
     }
 }

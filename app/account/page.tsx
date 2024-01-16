@@ -2,11 +2,31 @@
 import Navbar from "@/components/navbar/Navbar";
 import Send from "@/components/send/Send";
 import BuyGHO from "@/components/buyGho/BuyGHO";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount, useBalance } from "wagmi";
+import { GHO_MAINNET } from "@/helpers/constants";
+import { getTokenUSD } from "@/utils/getTokenUSD";
 export default function Account() {
+  const { address, isConnected } = useAccount()   
+
   const [openSendModal, setOpenSendModal] = useState<boolean>(false);
   const [openReciveModal, setOpenReciveModal] = useState<boolean>(false);
   const [openBuyModal, setOpenBuyModal] = useState<boolean>(false);
+  const [tokenRateUSD, setTokenRateUSD] = useState<number | null>(null)
+
+  const GHO = useBalance({
+    address: address,
+    token: '0xc4bF5CbDaBE595361438F8c6a187bDc330539c60',
+    watch: true
+  })
+
+  useEffect(()=> {
+    const getTokenRateUSD = async () => {
+      const TokenRateUSD =await getTokenUSD('ethereum', GHO_MAINNET)
+      setTokenRateUSD(TokenRateUSD!)
+    }
+    getTokenRateUSD()
+  })
 
   return (
     <main className="flex min-h-screen flex-col items-center  bg-gradient-to-r from-slate-900 to-slate-700">
@@ -23,16 +43,28 @@ export default function Account() {
             💳 Buy GHO
           </button>
         </div>
-        <div className="flex flex-col gap-3">
-          <p className="text-6xl ">
-            <span>0</span>
-            <span>GHO</span>
-          </p>
-          <p className="text-center">
-            <span>0</span>
-            <span>USD</span>
-          </p>
-        </div>
+        {
+          isConnected 
+          ? (<>
+              <div className="flex flex-col gap-3">
+                <p className="text-6xl gap-2">
+                  <span>{GHO.data?.formatted} GHO</span>
+                </p>
+                <p className="text-center">
+                  <span>$ {Number(GHO.data?.formatted) * tokenRateUSD!}</span>
+                </p>
+              </div>
+            </>
+          )   
+          : (<>
+          <div className="flex">
+            <p className="text-[23px] text-blue-100">
+              Please Connect Wallet w/ Socials
+            </p>
+          </div>
+            </> 
+          )
+        }
         <div className="flex min-w-[400px]  text-xl gap-5 justify-center">
           <button
             onClick={() => {

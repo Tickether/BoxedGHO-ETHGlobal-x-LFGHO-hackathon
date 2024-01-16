@@ -18,7 +18,7 @@ import { ReactNode, useEffect, useState } from 'react'
 
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [goerli],
+    [sepolia],
     [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY })],
 )
 
