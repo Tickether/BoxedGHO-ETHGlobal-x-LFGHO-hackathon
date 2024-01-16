@@ -5,28 +5,29 @@ import BuyGHO from "@/components/buyGho/BuyGHO";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { GHO_MAINNET } from "@/helpers/constants";
+import Recive from "@/components/recive/Recive";
 import { getTokenUSD } from "@/utils/getTokenUSD";
 export default function Account() {
-  const { address, isConnected } = useAccount()   
+  const { address, isConnected } = useAccount();
 
   const [openSendModal, setOpenSendModal] = useState<boolean>(false);
   const [openReciveModal, setOpenReciveModal] = useState<boolean>(false);
   const [openBuyModal, setOpenBuyModal] = useState<boolean>(false);
-  const [tokenRateUSD, setTokenRateUSD] = useState<number | null>(null)
+  const [tokenRateUSD, setTokenRateUSD] = useState<number | null>(null);
 
   const GHO = useBalance({
     address: address,
-    token: '0xc4bF5CbDaBE595361438F8c6a187bDc330539c60',
-    watch: true
-  })
+    token: "0xc4bF5CbDaBE595361438F8c6a187bDc330539c60",
+    watch: true,
+  });
 
-  useEffect(()=> {
+  useEffect(() => {
     const getTokenRateUSD = async () => {
-      const TokenRateUSD =await getTokenUSD('ethereum', GHO_MAINNET)
-      setTokenRateUSD(TokenRateUSD!)
-    }
-    getTokenRateUSD()
-  })
+      const TokenRateUSD = await getTokenUSD("ethereum", GHO_MAINNET);
+      setTokenRateUSD(TokenRateUSD!);
+    };
+    getTokenRateUSD();
+  });
 
   return (
     <main className="flex min-h-screen flex-col items-center  bg-gradient-to-r from-slate-900 to-slate-700">
@@ -43,28 +44,26 @@ export default function Account() {
             💳 Buy GHO
           </button>
         </div>
-        {
-          isConnected 
-          ? (<>
-              <div className="flex flex-col gap-3">
-                <p className="text-6xl gap-2">
-                  <span>{GHO.data?.formatted} GHO</span>
-                </p>
-                <p className="text-center">
-                  <span>$ {Number(GHO.data?.formatted) * tokenRateUSD!}</span>
-                </p>
-              </div>
-            </>
-          )   
-          : (<>
-          <div className="flex">
-            <p className="text-[23px] text-blue-100">
-              Please Connect Wallet w/ Socials
-            </p>
-          </div>
-            </> 
-          )
-        }
+        {isConnected ? (
+          <>
+            <div className="flex flex-col gap-3">
+              <p className="text-6xl gap-2">
+                <span>{GHO.data?.formatted} GHO</span>
+              </p>
+              <p className="text-center">
+                <span>$ {Number(GHO.data?.formatted) * tokenRateUSD!}</span>
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex">
+              <p className="text-[23px] text-blue-100">
+                Please Connect Wallet w/ Socials
+              </p>
+            </div>
+          </>
+        )}
         <div className="flex min-w-[400px]  text-xl gap-5 justify-center">
           <button
             onClick={() => {
@@ -74,13 +73,19 @@ export default function Account() {
           >
             ↗️ Send
           </button>
-          <button className="border-2 p-3 rounded-2xl hover:bg-slate-700  border-solid font-semibold text-l border-white">
+          <button
+            onClick={() => {
+              setOpenReciveModal(true);
+            }}
+            className="border-2 p-3 rounded-2xl hover:bg-slate-700  border-solid font-semibold text-l border-white"
+          >
             ↘️ Receive
           </button>
         </div>
       </div>
       {openSendModal && <Send setOpenSendModal={setOpenSendModal} />}
       {openBuyModal && <BuyGHO setOpenBuyModal={setOpenBuyModal} />}
+      {openReciveModal && <Recive setOpenReciveModal={setOpenReciveModal} />}
     </main>
   );
 }
