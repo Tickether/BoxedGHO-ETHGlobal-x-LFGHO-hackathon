@@ -7,11 +7,12 @@ import connectDB from '@/utils/db/mongodb'
 export async function POST(
     req: Request,
 ) {
-    const { address, txn, amountGHO, amountBridged, bridgeChain, bridgeToken } =  await req.json()
+    const { address, addressTo, txn, amountGHO, amountBridged, bridgeChain, bridgeToken } =  await req.json()
     try {
         await connectDB()
         const bridge = await Bridge.create({ 
             address: address,
+            addressTo: addressTo,
             txn: txn, 
             amountGHO: amountGHO, 
             amountBridged: amountBridged, 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 export interface Bridge {
     address: string
+    addressTo: string
     txn: string 
     amountGHO: string 
     amountBridged: string

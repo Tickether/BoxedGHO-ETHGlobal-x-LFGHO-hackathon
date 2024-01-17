@@ -7,6 +7,10 @@ const BridgeSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        addressTo: {
+            type: String,
+            required: true,
+        },
         txn: {
             type: String,
             unique: true,
