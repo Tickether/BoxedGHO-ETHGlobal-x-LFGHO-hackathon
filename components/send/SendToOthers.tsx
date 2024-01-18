@@ -1,6 +1,128 @@
-import React from "react";
+import { ghoTokenMain } from "@/helpers/constants";
+import { BoxActionContext } from "@/helpers/contexts/decentActionContext";
+import { RouteSelectContext } from "@/helpers/contexts/routeSelectContext";
+import { confirmRoute, executeTransaction } from "@/helpers/executeTransaction";
+import { useBalance } from "@/helpers/hooks/useBalance";
+import { useAmtInQuote, useAmtOutQuote } from "@/helpers/hooks/useSwapQuotes";
+import { roundValue } from "@/helpers/roundValue";
+import useDebounced from "@/helpers/useDebounced";
+import { ChainId, TokenInfo } from "@decent.xyz/box-common";
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import { Hex } from "viem";
+import { useNetwork } from "wagmi";
 import ChainSelectMenu from "../boxComps/ChainSelectorMenu";
-const SendToOthers = () => {
+import TokenSelectorComponent from "../boxComps/TokenSelectorComponent";
+
+
+const SendToOthers = ({ connectedAddress, publicClient }: any) => {
+  const { routeVars, updateRouteVars } = useContext(RouteSelectContext);
+  const {
+    setBoxActionArgs,
+    boxActionResponse: { actionResponse },
+  } = useContext(BoxActionContext);
+
+  const { chain } = useNetwork();
+
+  const [showContinue, setShowContinue] = useState(true);
+  const [hash, setHash] = useState<Hex>();
+
+  const { dstChain, dstToken } = routeVars;
+  const srcToken = routeVars.srcToken;
+  const srcChain = routeVars.srcChain;
+
+  const setSrcChain = (c: ChainId) => updateRouteVars({ srcChain: c });
+  const setSrcToken = (t: TokenInfo) => updateRouteVars({ srcToken: t });
+  useEffect(() => {
+    updateRouteVars({
+      srcChain: ChainId.ETHEREUM,
+      srcToken: ghoTokenMain,
+    });
+  });
+
+  //use wamgi useBalance here instead
+  const { nativeBalance: srcNativeBalance, tokenBalance: srcTokenBalance } =
+    useBalance(connectedAddress, srcToken);
+  const srcTokenBalanceRounded = roundValue(srcTokenBalance, 2) ?? 0;
+
+  const [submitting, setSubmitting] = useState(false);
+  const [submitErrorText, setSubmitErrorText] = useState("");
+
+  const handleSrcAmtChange = (strVal: string) => {
+    if (strVal == "") {
+      setSrcInputVal("");
+      return;
+    }
+
+    if (!/^\d*\.?\d*$/.test(strVal)) return;
+    setSrcInputVal(strVal);
+    setDstInputVal(null);
+    overrideDebouncedDst(null);
+    setSubmitErrorText("");
+  };
+
+  const handleDstAmtChange = (strVal: string) => {
+    if (!/^\d*\.?\d*$/.test(strVal)) return;
+    setDstInputVal(strVal);
+    setSrcInputVal(null);
+    overrideDebouncedSrc(null);
+    // setSubmitErrorText('');
+  };
+
+  const [srcInputVal, setSrcInputVal] = useState<string | null>(null);
+  const [dstInputVal, setDstInputVal] = useState<string | null>(null);
+
+  const [srcInputDebounced, overrideDebouncedSrc] = useDebounced(srcInputVal);
+  const [dstInputDebounced, overrideDebouncedDst] = useDebounced(dstInputVal);
+
+  const srcDebounceWaiting = srcInputDebounced != srcInputVal;
+  const dstDebounceWaiting = dstInputDebounced != dstInputVal;
+
+  const {
+    isLoading: amtOutLoading,
+    errorText: amtOutErrorText,
+    fees: amtOutFees,
+    tx: amtOutTx,
+    srcCalcedVal,
+  } = useAmtOutQuote(dstInputDebounced, dstToken, srcToken, srcChain);
+
+  const {
+    isLoading: amtInLoading,
+    errorText: amtInErrorText,
+    fees: amtInFees,
+    tx: amtInTx,
+    dstCalcedVal,
+  } = useAmtInQuote(srcInputDebounced, dstToken, srcToken, srcChain);
+
+  const srcDisplay = srcCalcedVal ?? srcInputVal ?? "";
+  const dstDisplay = dstCalcedVal ?? dstInputVal ?? "";
+
+  useEffect(() => {
+    const srcNum = Number(srcDisplay);
+    if (srcNum > srcTokenBalance) {
+      setSubmitErrorText(
+        "Insufficient funds. Try onramping to fill your wallet.",
+      );
+    } else {
+      setSubmitErrorText("");
+    }
+  }, [srcTokenBalance, srcDisplay]);
+
+  const srcSpinning = amtOutLoading || dstDebounceWaiting;
+  const dstSpinning = amtInLoading || srcDebounceWaiting;
+
+  const continueDisabled =
+    !!submitErrorText ||
+    !!amtOutErrorText ||
+    !!amtInErrorText ||
+    !chain ||
+    srcSpinning ||
+    dstSpinning ||
+    !(Number(srcInputDebounced) || Number(dstInputDebounced)) ||
+    submitting;
+  
+  const confirmDisabled = !actionResponse?.tx;
+
+
   return (
     <main className="w-[60%] h-full items-start mt-4  text-white flex justify-around">
       <div className="bg-slate-900 w-[60%] flex h-fit  mb-14 flex-col pt-10  shadow-sm shadow-blue-500  items-center  rounded-2xl">
@@ -12,41 +134,54 @@ const SendToOthers = () => {
           <div className="flex items-center border-b-[1px] pb-5 gap-2 p-1 h-[50%]">
             <span className="text-sm"> Enter GHO Amount</span>
             <input
-              className="bg-slate-800 border-none w-[50%] p-2 h-11"
-              placeholder="0"
+              className="w-full text-black focus:outline-none"
+              type="text"
+              value={srcDisplay}
+              onChange={(e) => handleSrcAmtChange(e.target.value)}
+              disabled={srcSpinning || submitting}
             />
             <button className="border-[1px] h-11 w-[20%] rounded-lg hover:bg-slate-500 px-3">
               Max
             </button>
             <span className="flex border-[1px] h-11 justify-center rounded-lg items-center w-[30%]">
-              0.0/GHO
+              {srcTokenBalanceRounded}/GHO
             </span>
           </div>
 
           {/* Coin and  Chain Selection  */}
           <div className="w-full h-[50%] border-b-[1px]  items-center py-8 gap-5 justify-center flex">
             {/* Respons / How Much you get */}
-            <div className=" w-full   flex flex-col justify-center items-center px-3">
+            <div className=" w-full text-blue-500  flex flex-col justify-center items-center px-3">
               <span className="flex justify-start w-full">Receving amount</span>
-              <span className="bg-slate-800 w-full flex items-center px-4 h-11">
-                0
-              </span>
+              {dstSpinning && (
+                <div className="absolute inset-0 rounded load-shine opacity-75" />
+              )}
+              <input
+                className="w-full  focus:outline-none"
+                type="text"
+                value={dstDisplay}
+                onChange={(e) => handleDstAmtChange(e.target.value)}
+                disabled={true}
+              />
             </div>
             <div className="flex flex-col w-[50%]">
               <span>Select Token</span>
-              <select className="bg-slate-800 text-center h-11" id="mySelectId">
-                <option value="option1">Eth</option>
-                <option value="option2">Matic</option>
-                <option value="option3">USDC</option>
-              </select>
+              <TokenSelectorComponent
+                chainId={dstChain}
+                selectedToken={dstToken}
+                onSelectToken={(t) => {
+                  updateRouteVars({ dstToken: t });
+                }}
+              />
             </div>
             <div className="flex flex-col w-[50%]">
               <span>Select Chain</span>
-              <select className="bg-slate-800 text-center h-11" id="mySelectId">
-                <option value="option1">Ethereum</option>
-                <option value="option2">Polygon</option>
-                <option value="option3">Optimisum</option>
-              </select>
+              <ChainSelectMenu
+                chainId={dstChain}
+                onSelectChain={(c) => {
+                  updateRouteVars({ dstChain: c });
+                }}
+              />
             </div>
           </div>
         </div>
@@ -59,10 +194,78 @@ const SendToOthers = () => {
               placeholder="0x0000000000000000000000000000000000000000"
             />
           </div>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1 py-4 px-2 text-sm">
+            {srcInputDebounced &&
+              amtInFees &&
+              Object.keys(amtInFees).map((feeName) => (
+                <Fragment key={feeName}>
+                  <div>{feeName}</div>
+                  <div className="text-right">{amtInFees[feeName]}</div>
+                </Fragment>
+              ))}
+
+            {dstInputDebounced &&
+              amtOutFees &&
+              Object.keys(amtOutFees).map((feeName) => (
+                <Fragment key={feeName}>
+                  <div>{feeName}</div>
+                  <div className="text-right">{amtOutFees[feeName]}</div>
+                </Fragment>
+              ))}
+          </div>
+          <div className="text-red-500">{submitErrorText}</div>
+          <div className="mt-auto"></div>
           <div className="flex justify-center items-end">
-            <button className="border-2 flex h-12 items-end  justify-end p-3 rounded-2xl hover:bg-green-500 hover:text-black border-solid font-semibold text-l border-white">
-              Confirm Transaction
+          {showContinue ? (
+            <button
+              className={
+                `${continueDisabled ? 'bg-gray-300 text-gray-600 ' : 'bg-black text-white '}` +
+                "text-center font-medium" +
+                " w-full rounded-lg p-2 mt-4" +
+                " relative flex items-center justify-center"
+              }
+              onClick={() => confirmRoute({
+                chain: chain!,
+                srcChain,
+                srcToken,
+                dstToken,
+                setBoxActionArgs,
+                updateRouteVars,
+                srcInputVal: srcInputDebounced!,
+                dstInputVal: dstInputDebounced!,
+                connectedAddress,
+                continueDisabled,
+                setSubmitting,
+                setShowContinue,
+                srcDisplay
+              })}
+              disabled={continueDisabled}
+            >
+              Confirm Selections
             </button>
+          ) : (
+            <button
+              className={
+                `${confirmDisabled ? 'bg-gray-300 text-gray-600 ': 'bg-primary text-white '}` +
+                "text-center font-medium" +
+                " w-full rounded-lg p-2 mt-4" +
+                " relative flex items-center justify-center"
+              }
+              disabled={confirmDisabled}
+              onClick={() => executeTransaction({
+                connectedAddress,
+                srcChain,
+                actionResponse,
+                setSubmitting,
+                setHash,
+                setShowContinue,
+                publicClient
+              })}
+            >
+              Swap
+              {submitting && <div className="absolute right-4 load-spinner"></div>}
+            </button>
+          )}
           </div>
         </div>
 

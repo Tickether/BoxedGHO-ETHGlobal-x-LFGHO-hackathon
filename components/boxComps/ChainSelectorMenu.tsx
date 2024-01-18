@@ -1,5 +1,3 @@
-'use client'
-
 import { Fragment, useEffect } from "react";
 import Image from "next/image";
 import { Popover, Transition } from "@headlessui/react";
@@ -25,6 +23,7 @@ export default function ChainSelectMenu({
   anchorToRight,
   className = "relative inline-block h-6",
 }: ChainSelectMenuProps) {
+  /*
   const searchParams = useSearchParams();
   const searchParamsChain = searchParams.get("chain");
   useEffect(() => {
@@ -33,6 +32,7 @@ export default function ChainSelectMenu({
       onSelectChain(Number(chain));
     }
   }, [availableChains, searchParams, searchParamsChain, onSelectChain]);
+  */
   return (
     <Popover className={className}>
       {({ close }) => (

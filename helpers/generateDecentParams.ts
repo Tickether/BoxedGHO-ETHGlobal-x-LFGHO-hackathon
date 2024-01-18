@@ -1,12 +1,12 @@
 import { ActionType, TokenInfo } from "@decent.xyz/box-common";
 import { UseBoxActionArgs } from "@decent.xyz/box-hooks";
 import { Address, parseUnits, zeroAddress } from "viem";
-import { usdcToken } from "./constants";
+import { usdcTokenOp } from "./constants";
 
 export const generateDecentAmountInParams = ({
   dstToken,
   srcAmount,
-  srcToken = usdcToken,
+  srcToken = usdcTokenOp,
   connectedAddress,
   toAddress,
 }: {
@@ -49,7 +49,7 @@ export const generateDecentAmountOutParams = ({
   dstToken,
   isNative,
   dstAmount,
-  srcToken = usdcToken,
+  srcToken = usdcTokenOp,
   connectedAddress,
   contractAddress,
   toAddress,

@@ -1,25 +1,21 @@
 'use client'
 
-import { ChainId, TokenInfo, ethGasToken } from "@decent.xyz/box-common";
-import { polygonGasToken, usdcToken } from "../constants";
+import { ChainId, TokenInfo } from "@decent.xyz/box-common";
+import { ethGasToken, opGasToken, baseGasToken, arbGasToken } from "../constants";
 import { Dispatch, PropsWithChildren, createContext, useReducer } from "react";
 
 export const chainIcons: { [key: number]: string } = {
-  [ChainId.SEPOLIA]: "/ethereum.svg",
-  [ChainId.OPTIMISM_TESTNET]: "/optimism.svg",
-  [ChainId.ARBITRUM_TESTNET]: "/arbitrum.svg",
-  [ChainId.POLYGON_TESTNET]: "/polygon.svg",
-  [ChainId.BASE_TESTNET]: "/base.png",
-  [ChainId.AVALANCHE_TESTNET]: "/avalanche.svg",
+  [ChainId.ETHEREUM]: "/ethereum.svg",
+  [ChainId.OPTIMISM]: "/optimism.svg",
+  [ChainId.ARBITRUM]: "/arbitrum.svg",
+  [ChainId.BASE]: "/base.png",
 };
 
 export const chainNames: { [key: number]: string } = {
-  [ChainId.SEPOLIA]: "Ethereum",
-  [ChainId.OPTIMISM_TESTNET]: "OP Mainnet",
-  [ChainId.ARBITRUM_TESTNET]: "Arbitrum One",
-  [ChainId.POLYGON_TESTNET]: "Polygon",
-  [ChainId.BASE_TESTNET]: "Base",
-  [ChainId.AVALANCHE_TESTNET]: "Avalanche",
+  [ChainId.ETHEREUM]: "Ethereum",
+  [ChainId.OPTIMISM]: "OP Mainnet",
+  [ChainId.ARBITRUM]: "Arbitrum One",
+  [ChainId.BASE]: "Base",
 };
 
 export type RouteVars = {
@@ -36,10 +32,10 @@ export const RouteSelectContext = createContext<{
   updateRouteVars: Dispatch<Partial<RouteVars>>;
 }>({
   routeVars: {
-    srcChain: ChainId.OPTIMISM_TESTNET,
-    srcToken: ethGasToken,
-    dstChain: ChainId.OPTIMISM_TESTNET,
-    dstToken: usdcToken,
+    srcChain: ChainId.OPTIMISM,
+    srcToken: opGasToken,
+    dstChain: ChainId.OPTIMISM,
+    dstToken: opGasToken,
     purchaseName: "",
     sameChain: false,
   },
@@ -61,18 +57,24 @@ function routeReducer(prev: RouteVars, next: Partial<RouteVars>) {
 }
 
 export function getDefaultToken(chainId: ChainId) {
-  if (chainId == ChainId.POLYGON || chainId == ChainId.POLYGON_TESTNET) {
-    return { ...polygonGasToken, chainId };
+  if (chainId == ChainId.ARBITRUM) {
+    return { ...arbGasToken, chainId };
+  }
+  if (chainId == ChainId.OPTIMISM) {
+    return { ...opGasToken, chainId };
+  }
+  if (chainId == ChainId.BASE) {
+    return { ...baseGasToken, chainId };
   }
   return { ...ethGasToken, chainId };
 }
 
 export default function RouteSelectProvider({ children }: PropsWithChildren) {
   const [routeVars, updateRouteVars] = useReducer(routeReducer, {
-    srcChain: ChainId.ARBITRUM_TESTNET,
-    srcToken: ethGasToken,
-    dstChain: ChainId.OPTIMISM_TESTNET,
-    dstToken: usdcToken,
+    srcChain: ChainId.ARBITRUM,
+    srcToken: arbGasToken,
+    dstChain: ChainId.OPTIMISM,
+    dstToken: opGasToken,
     sameChain: false,
     purchaseName: "",
   });

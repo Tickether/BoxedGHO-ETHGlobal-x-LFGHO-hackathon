@@ -1,7 +1,7 @@
 import { UseBoxActionArgs, useBoxAction } from "@decent.xyz/box-hooks";
 import { ChainId, TokenInfo } from "@decent.xyz/box-common";
 import { formatUnits } from "viem";
-import { usdcToken } from "../constants";
+import { usdcTokenOp } from "../constants";
 import {
   generateDecentAmountInParams,
   generateDecentAmountOutParams,
@@ -110,7 +110,7 @@ function useDecentAmountOutQuote(
   const tokenPayment = quote?.actionResponse?.tokenPayment;
   const paymentAmt = !tokenPayment
     ? undefined
-    : parseFloat(formatUnits(tokenPayment.amount, usdcToken.decimals));
+    : parseFloat(formatUnits(tokenPayment.amount, usdcTokenOp.decimals));
 
   return { ...quote, paymentAmt };
 }
