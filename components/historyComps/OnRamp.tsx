@@ -1,21 +1,14 @@
 import { setFips } from "crypto";
 import React, { useState } from "react";
 import Image from "next/image";
+import { Ramp } from "@/hooks/useGetRamps";
 
-interface Ramp {
-  address: string;
-  email: string;
-  txn: string;
-  ref: string;
-  amountGHO: string;
-  amountUSD: string;
-  status: string;
-  createdAt: string;
-}
 const OnRamp = ({ data }: { data: Ramp }) => {
   const [flag, setflag] = useState<boolean>(false);
-
-  const date = new Date(data.createdAt);
+  const { address, email, txn, ref, amountGHO, amountUSD, status, createdAt } =
+    data;
+  // date formatting
+  const date = new Date(createdAt);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const formattedDate = date.toLocaleString("en-US", {
     timeZone: userTimeZone,
@@ -28,6 +21,7 @@ const OnRamp = ({ data }: { data: Ramp }) => {
     second: "numeric",
     timeZoneName: "short",
   });
+
   return (
     <div className="w-full h-fit bg-slate-700 hover:border-2 border-blue-500 border-solid  rounded-2xl mb-5">
       <span className="text-base h-7 flex justify-start items-center pl-4 pt-2 mb-3">
@@ -36,22 +30,30 @@ const OnRamp = ({ data }: { data: Ramp }) => {
       <div className="bg-slate-900 rounded-b-2xl ">
         <div className="h-11 text-lg flex justify-between   ">
           <div className="items-center w-[90%] pl-7 flex justify-between">
-            <span>🛒Buy</span>
-            <span> cost : {data.amountUSD}$</span>
-            <span>{data.amountGHO} GHO </span>
+            <span className=" hover:bg-white hover:text-black px-2 rounded-lg">
+              🛒Buy
+            </span>
+            <span className=" hover:bg-white hover:text-black px-2 rounded-lg">
+              cost : {amountUSD}$
+            </span>
+            <span className=" hover:bg-white hover:text-black px-2 rounded-lg">
+              {amountGHO} GHO{" "}
+            </span>
             <span
               onClick={() =>
-                window.open(`https://sepolia.etherscan.io/tx/${data.txn}`)
+                window.open(`https://sepolia.etherscan.io/tx/${txn}`)
               }
-              className=" cursor-pointer"
-            >{` txhash : ${data.txn.slice(0, 4)}...${data.txn.slice(
-              data.txn.length - 5,
-              data.txn.length
+              className=" cursor-pointer hover:bg-white hover:text-black px-2 rounded-lg "
+            >{` txhash : ${txn.slice(0, 4)}...${txn.slice(
+              txn.length - 5,
+              txn.length
             )}`}</span>
-            <span>{data.status}</span>
+            <span className=" hover:bg-white hover:text-black px-2 rounded-lg">
+              {status}
+            </span>
           </div>
           <button
-            className="mr-7"
+            className="mr-7 "
             onClick={() => {
               setflag(true);
             }}
@@ -60,6 +62,7 @@ const OnRamp = ({ data }: { data: Ramp }) => {
           </button>
         </div>
 
+        {/* Modal Part */}
         <div
           className={`${
             flag
@@ -75,39 +78,61 @@ const OnRamp = ({ data }: { data: Ramp }) => {
           >
             <Image src="/cancel.svg" alt="doggy" width={50} height={50} />
           </button>
-          <div className="  flex justify-between gap-5 h-fit shadow-md rounded-lg px-3  py-8 items-center  shadow-blue-500 flex-col w-[40%]">
+          <div className="  flex justify-between gap-3 h-fit shadow-md rounded-lg px-3  py-8 items-center  shadow-blue-500 flex-col w-[50%]">
             <span className="text-xl">
-              purchase by : {""}
+              Purchase By : {""}
               <span className="text-xl border-b-2 border-blue-600">
-                {data.email}
+                {email}
               </span>
             </span>
-
             <div className="w-[80%] mt-11 flex justify-between text-lg">
-              <span className="text-slate-600">Transaction Hash</span>
-              <span className=" w-[40%]">
-                {`${data.txn.slice(0, 8)}...${data.txn.slice(
-                  data.txn.length - 8,
-                  data.txn.length
+              <span className="text-slate-600 font-sans font-semibold">
+                Status
+              </span>
+              <span className="text-[16px] bg-green-500 px-3 rounded-2xl flex justify-center w-[50%]">
+                {status}
+              </span>
+            </div>
+            <div className="w-[80%]  flex justify-between text-lg">
+              <span className="text-slate-600 font-sans font-semibold">
+                Transaction Hash
+              </span>
+              <span className="text-[16px] w-[50%]">
+                {`${txn.slice(0, 8)}...${txn.slice(
+                  txn.length - 8,
+                  txn.length
                 )}`}
               </span>
             </div>
             <div className="w-[80%] flex justify-between text-lg">
-              <span className="text-slate-600">Purchase At</span>
-              <span className=" w-[40%]">{formattedDate}</span>
+              <span className="text-slate-600 font-sans font-semibold">
+                Purchase At
+              </span>
+              <span className="text-[16px] w-[50%]">{formattedDate}</span>
             </div>
 
             <div className="w-[80%] flex justify-between text-lg">
-              <span className="text-slate-600">GHO Ammount </span>
-              <span className=" w-[40%]">{data.amountGHO} GHO</span>
+              <span className="text-slate-600 font-sans font-semibold">
+                GHO Ammount{" "}
+              </span>
+              <span className="text-[16px] w-[50%]">{amountGHO} GHO</span>
             </div>
-            <div className="w-[80%] mb-11 flex justify-between text-lg">
-              <span className="text-slate-600">Total cost</span>
-              <span className=" w-[40%]">{data.amountUSD} $</span>
+            <div className="w-[80%] mb-1 flex justify-between text-lg">
+              <span className="text-slate-600 font-sans font-semibold">
+                Total cost
+              </span>
+              <span className="text-[16px] w-[50%]">{amountUSD} $</span>
             </div>
+            <div className="w-[80%] mb-1 flex justify-between text-lg">
+              <span className="text-slate-600 font-sans font-semibold">
+                Ref
+              </span>
+              <span className="text-[16px] w-[50%]">{ref}</span>
+            </div>
+
             <button
               onClick={() => {
-                window.open(`https://sepolia.etherscan.io/tx/${data.txn}`);
+                window.open(`https://sepolia.etherscan.io/tx/${txn}`);
               }}
               className="border-white border-2 w-[200px] rounded-xl p-3 text-lg hover:bg-black "
             >
@@ -115,6 +140,7 @@ const OnRamp = ({ data }: { data: Ramp }) => {
             </button>
           </div>
         </div>
+        {/* Modal Part */}
       </div>
     </div>
   );
