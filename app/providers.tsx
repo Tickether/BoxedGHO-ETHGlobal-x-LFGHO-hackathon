@@ -11,14 +11,14 @@ import {
     TwitchSocialWalletConnector,
     TwitterSocialWalletConnector,
 } from '@zerodev/wagmi'
-import { goerli, sepolia } from 'wagmi/chains'
+import { sepolia, mainnet } from 'wagmi/chains'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { ReactNode, useEffect, useState } from 'react'
 
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [sepolia],
+    [mainnet, sepolia],
     [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY })],
 )
 
@@ -27,7 +27,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 
     const [config] = useState(()=>{
         if (typeof window !== 'undefined') {
-            const options = { chains, options: { projectId: process.env.NEXT_PUBLIC_ZERO_DEV_PROJECT_ID, shimDisconnect: true } }
+            const options = { chains, options: { projectIds:[ process.env.NEXT_PUBLIC_ZERO_DEV_PROJECT_ID, process.env.NEXT_PUBLIC_ZERO_DEV_PROJECT_ID_SEPOLIA], shimDisconnect: true } }
             return (
                 createConfig(
                     getDefaultConfig({

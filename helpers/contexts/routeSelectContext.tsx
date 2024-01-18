@@ -1,7 +1,7 @@
 'use client'
 
 import { ChainId, TokenInfo } from "@decent.xyz/box-common";
-import { ethGasToken, opGasToken, baseGasToken, arbGasToken } from "../constants";
+import { ethGasToken, opGasToken, baseGasToken, arbGasToken, ghoTokenMain } from "../constants";
 import { Dispatch, PropsWithChildren, createContext, useReducer } from "react";
 
 export const chainIcons: { [key: number]: string } = {
@@ -32,8 +32,8 @@ export const RouteSelectContext = createContext<{
   updateRouteVars: Dispatch<Partial<RouteVars>>;
 }>({
   routeVars: {
-    srcChain: ChainId.OPTIMISM,
-    srcToken: opGasToken,
+    srcChain: ChainId.ETHEREUM,
+    srcToken: ghoTokenMain,
     dstChain: ChainId.OPTIMISM,
     dstToken: opGasToken,
     purchaseName: "",
@@ -71,8 +71,8 @@ export function getDefaultToken(chainId: ChainId) {
 
 export default function RouteSelectProvider({ children }: PropsWithChildren) {
   const [routeVars, updateRouteVars] = useReducer(routeReducer, {
-    srcChain: ChainId.ARBITRUM,
-    srcToken: arbGasToken,
+    srcChain: ChainId.ETHEREUM,
+    srcToken: ghoTokenMain,
     dstChain: ChainId.OPTIMISM,
     dstToken: opGasToken,
     sameChain: false,

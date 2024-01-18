@@ -7,6 +7,7 @@ import {
 } from "./generateDecentParams";
 import { sendTransaction, switchNetwork } from "@wagmi/core";
 import { getAllowance, approveToken } from "./approveToken";
+import { usePrepareSendUserOperation, useSendUserOperation } from "@zerodev/wagmi";
 
 export const confirmRoute = async ({
   srcChain,
@@ -160,9 +161,22 @@ export const executeTransaction = async ({
         }
       }
       const tx = actionResponse.tx as EvmTransaction;
-      const { hash } = await sendTransaction(tx);
+      //send tx as from zerodev
+
+      //const { hash } = await sendTransaction(tx);
+      const { config, error } = usePrepareSendUserOperation({
+        to: actionResponse.tx.to, // bridge
+        data: actionResponse.tx.data,
+        value: 0,
+      })
+      console.log(config)
+      const { sendUserOperation, data } = useSendUserOperation(config);
+      console.log(data)
+      sendUserOperation!()
+
+      // old stuff replaced hash
       setSubmitting?.(false);
-      setHash?.(hash);
+      setHash?.(data?.hash!);
     } catch (e) {
       toast.error('Error sending transaction.', {
         position: toast.POSITION.BOTTOM_CENTER

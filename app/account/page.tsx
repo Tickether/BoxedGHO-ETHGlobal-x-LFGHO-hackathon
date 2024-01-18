@@ -3,7 +3,7 @@ import Navbar from "@/components/navbar/Navbar";
 import Send from "@/components/send/Send";
 import BuyGHO from "@/components/buyGho/BuyGHO";
 import { useEffect, useState } from "react";
-import { useAccount, useBalance } from "wagmi";
+import { sepolia, useAccount, useBalance } from "wagmi";
 import { GHO_TESTNET } from "@/helpers/constants";
 import { getTokenUSD } from "@/utils/getTokenUSD";
 import Receive from "@/components/receive/Receive";
@@ -20,6 +20,7 @@ export default function Account() {
     address: address,
     token: "0xc4bF5CbDaBE595361438F8c6a187bDc330539c60",
     watch: true,
+    chainId: sepolia.id
   });
 
   useEffect(() => {

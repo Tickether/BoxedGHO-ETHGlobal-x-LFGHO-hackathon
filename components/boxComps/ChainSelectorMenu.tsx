@@ -68,9 +68,9 @@ export default function ChainSelectMenu({
               className={
                 "absolute z-10 w-screen max-w-[11rem] px-4 top-full mt-2" +
                 (anchorToRight ? " -right-4" : " -left-4")
-              }
+              } text-center
             >
-              <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white py-2">
+              <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-slate-800 py-2">
                 {availableChains.map((c) => (
                   <button
                     key={c}

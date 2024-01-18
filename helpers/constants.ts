@@ -52,7 +52,7 @@ export const ghoToken: TokenInfo = {
   chainId: ChainId.SEPOLIA,
   isNative: false,
 };
-export const GHO_MAINNET = "0xc4bF5CbDaBE595361438F8c6a187bDc330539c60";
+export const GHO_MAINNET = "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f";
 export const ghoTokenMain: TokenInfo = {
   address: GHO_MAINNET,
   decimals: 18,

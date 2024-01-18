@@ -34,12 +34,13 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
 
   const setSrcChain = (c: ChainId) => updateRouteVars({ srcChain: c });
   const setSrcToken = (t: TokenInfo) => updateRouteVars({ srcToken: t });
+
   useEffect(() => {
     updateRouteVars({
       srcChain: ChainId.ETHEREUM,
       srcToken: ghoTokenMain,
     });
-  });
+  },[srcChain, srcToken, updateRouteVars]);
 
   //use wamgi useBalance here instead
   const { nativeBalance: srcNativeBalance, tokenBalance: srcTokenBalance } =
@@ -97,7 +98,7 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
 
   const srcDisplay = srcCalcedVal ?? srcInputVal ?? "";
   const dstDisplay = dstCalcedVal ?? dstInputVal ?? "";
-
+  console.log(dstInputDebounced)
   useEffect(() => {
     const srcNum = Number(srcDisplay);
     if (srcNum > srcTokenBalance) {
@@ -127,24 +128,25 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
   return (
     <main className="w-[60%] h-full items-start mt-4 flex justify-around">
       <div className="bg-slate-900 w-[60%] flex h-fit flex-col pt-10  shadow-sm shadow-blue-500   items-center  rounded-2xl">
-        <div className="p-3 text border-b-[1px] w-full text-2xl border-gray-300">
+        <div className="p-3 text-white text border-b-[1px] w-full text-2xl border-gray-300">
           Convert GHO
         </div>
         <div className="p-3 m-3  w-full h-[60%] ">
           {/* Input GHO Part */}
           <div className="flex items-center border-b-[1px] pb-5 gap-2 p-1 h-[50%]">
-            <span className="text-sm"> Enter GHO Amount</span>
+            <span className="text-white text-sm"> Enter GHO Amount</span>
             <input
-              className="w-full focus:outline-none"
+              className="text-blue-300 bg-slate-800 border-none w-[50%] p-2 h-11 focus:outline-none"
               type="text"
               value={srcDisplay}
               onChange={(e) => handleSrcAmtChange(e.target.value)}
               disabled={srcSpinning || submitting}
+              placeholder="0"
             />
-            <button className="border-[1px] h-11 w-[20%] rounded-lg hover:bg-slate-500 px-3">
+            <button className="border-[1px] text-white h-11 w-[20%] rounded-lg hover:bg-slate-500 px-3">
               Max
             </button>
-            <span className="flex border-[1px] h-11 justify-center rounded-lg items-center w-[30%]">
+            <span className="flex text-white border-[1px] h-11 justify-center rounded-lg items-center w-[30%]">
             {srcTokenBalanceRounded}/GHO
             </span>
           </div>
@@ -153,34 +155,37 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
           <div className="w-full h-[50%] border-b-[1px]  items-center py-8 gap-5 justify-center flex">
             {/* Respons / How Much you get */}
             <div className=" w-full   flex flex-col justify-center items-center px-3">
-              <span className="flex justify-start w-full">Receving amount</span>
+              <span className="flex text-white justify-start w-full">Receving amount</span>
               {dstSpinning && (
                 <div className="absolute inset-0 rounded load-shine opacity-75" />
               )}
               <input
-                className="w-full focus:outline-none"
+                className="text-blue-300 bg-slate-800 w-full flex items-center px-4 h-11 focus:outline-none"
                 type="text"
                 value={dstDisplay}
                 onChange={(e) => handleDstAmtChange(e.target.value)}
-                disabled={true}
+                disabled={dstSpinning || submitting}
+                placeholder="0"
               />
             </div>
-            <div className="flex flex-col w-[50%]">
+            <div className="flex text-white flex-col w-[50%]">
               <span>Select Token</span>
               <TokenSelectorComponent
                 chainId={dstChain}
                 selectedToken={dstToken}
                 onSelectToken={(t) => {
                   updateRouteVars({ dstToken: t });
+                  setShowContinue(true);
                 }}
               />
             </div>
-            <div className="flex flex-col w-[50%]">
+            <div className="flex text-white flex-col w-[50%]">
               <span>Select Chain</span>
               <ChainSelectMenu
                 chainId={dstChain}
                 onSelectChain={(c) => {
                   updateRouteVars({ dstChain: c });
+                  setShowContinue(true);
                 }}
               />
             </div>
@@ -191,8 +196,8 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
             amtInFees &&
             Object.keys(amtInFees).map((feeName) => (
               <Fragment key={feeName}>
-                <div>{feeName}</div>
-                <div className="text-right">{amtInFees[feeName]}</div>
+                <div className="text-blue-300">{feeName}</div>
+                <div className="text-white text-right">{amtInFees[feeName]}</div>
               </Fragment>
             ))}
 
@@ -212,24 +217,23 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
           <button
             className={
               `${continueDisabled ? 'bg-gray-300 text-gray-600 ' : 'bg-black text-white '}` +
-              "text-center font-medium" +
-              " w-full rounded-lg p-2 mt-4" +
-              " relative flex items-center justify-center"
+              "border-2 flex  justify-center p-3 rounded-2xl hover:bg-green-500 hover:text-black border-solid font-semibold text-l border-white"
             }
             onClick={() => confirmRoute({
               chain: chain!,
-              srcChain,
-              srcToken,
-              dstToken,
-              setBoxActionArgs,
-              updateRouteVars,
-              srcInputVal: srcInputDebounced!,
-              dstInputVal: dstInputDebounced!,
-              connectedAddress,
-              continueDisabled,
-              setSubmitting,
-              setShowContinue,
-              srcDisplay
+            srcChain,
+            srcToken,
+            dstToken,
+            setBoxActionArgs,
+            updateRouteVars,
+            srcInputVal: srcInputDebounced!,
+            dstInputVal: dstInputDebounced!,
+            connectedAddress,
+            continueDisabled,
+            setSubmitting,
+            setShowContinue,
+            srcDisplay,
+            recipient: '0xAcCC1fe6537eb8EB56b31CcFC48Eb9363e8dd32E' //custom receiver
             })}
             disabled={continueDisabled}
           >
@@ -245,13 +249,13 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
             }
             disabled={confirmDisabled}
             onClick={() => executeTransaction({
-              connectedAddress,
-              srcChain,
               actionResponse,
               setSubmitting,
               setHash,
               setShowContinue,
-              publicClient
+              publicClient,
+              connectedAddress, 
+              srcChain: chain?.id!,
             })}
           >
             Swap

@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import SendToYourself from "./SendToYourself";
-import SendToOthers from "./SendToOthers";
+import { useAccount, useBalance, useNetwork } from "wagmi"
+import { configureChains, mainnet } from '@wagmi/core'
+import { publicProvider } from '@wagmi/core/providers/public'
+
 interface SendProps {
   setOpenSendModal: (openSendModal: boolean) => void;
 }
+
 function Send({ setOpenSendModal }: SendProps) {
+  const { address } = useAccount()
+    const { chain } = useNetwork();
+    const { publicClient } = configureChains([chain || mainnet], [publicProvider()])
+
   const [sendToYourself, setSendToYourself] = useState<boolean>(false);
   const [sendToOther, setSendToOther] = useState<boolean>(false);
   const [progress, setProgress] = useState<string>("20%");
@@ -74,7 +82,7 @@ function Send({ setOpenSendModal }: SendProps) {
             : "hidden"
         }
       >
-        <SendToOthers />
+        {/**<SendToOthers connectedAddress={address!} publicClient={publicClient}/> */}
       </div>
 
       <div
@@ -84,7 +92,7 @@ function Send({ setOpenSendModal }: SendProps) {
             : "hidden"
         }
       >
-        <SendToYourself />
+        <SendToYourself connectedAddress={address!} publicClient={publicClient}/>
       </div>
     </main>
   );

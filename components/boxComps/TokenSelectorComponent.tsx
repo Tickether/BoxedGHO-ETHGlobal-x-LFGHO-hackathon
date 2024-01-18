@@ -71,7 +71,7 @@ export default function TokenSelectorComponent ({
                             (anchorToRight ? " -right-4" : " -left-4")
                         }
                         >
-                        <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white py-2">
+                        <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-slate-800 py-2">
                             {availableTokens.map((c) => (
                             <button
                                 key={c.name}
