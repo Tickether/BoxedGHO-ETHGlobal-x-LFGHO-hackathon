@@ -165,9 +165,9 @@ export const executeTransaction = async ({
 
       //const { hash } = await sendTransaction(tx);
       const { config, error } = usePrepareSendUserOperation({
-        to: actionResponse.tx.to, // bridge
-        data: actionResponse.tx.data,
-        value: 0,
+        to: tx.to, // bridge
+        data: tx.data,
+        value: tx.value,
       })
       console.log(config)
       const { sendUserOperation, data } = useSendUserOperation(config);
