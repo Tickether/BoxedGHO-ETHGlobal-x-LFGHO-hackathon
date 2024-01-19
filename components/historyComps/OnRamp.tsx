@@ -5,8 +5,17 @@ import { Ramp } from "@/hooks/useGetRamps";
 
 const OnRamp = ({ data }: { data: Ramp }) => {
   const [flag, setflag] = useState<boolean>(false);
-  const { address, email, txn, ref, amountGHO, amountUSD, status, createdAt } =
-    data;
+  const {
+    address,
+    email,
+    txn,
+    ref,
+    amountGHO,
+    amountUSD,
+    status,
+    createdAt,
+    addressTo,
+  } = data;
   // date formatting
   const date = new Date(createdAt);
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -78,7 +87,7 @@ const OnRamp = ({ data }: { data: Ramp }) => {
           >
             <Image src="/cancel.svg" alt="doggy" width={50} height={50} />
           </button>
-          <div className="  flex justify-between gap-3 h-fit shadow-md rounded-lg px-3  py-8 items-center  shadow-blue-500 flex-col w-[50%]">
+          <div className="  flex justify-between gap-3 h-fit shadow-md rounded-lg px-3  py-8 items-center min-w-[1000px]  shadow-blue-500 flex-col w-[50%]">
             <span className="text-xl">
               Purchase By : {""}
               <span className="text-xl border-b-2 border-blue-600">
@@ -92,6 +101,16 @@ const OnRamp = ({ data }: { data: Ramp }) => {
               <span className="text-[16px] bg-green-500 px-3 rounded-2xl flex justify-center w-[50%]">
                 {status}
               </span>
+            </div>
+            <div className="w-[80%] flex justify-between text-lg">
+              <span className="text-slate-600 font-sans font-semibold">
+                From
+              </span>
+              <span className="text-[16px] w-[50%]">{address}</span>
+            </div>
+            <div className="w-[80%] flex justify-between text-lg">
+              <span className="text-slate-600 font-sans font-semibold">To</span>
+              <span className="text-[16px] w-[50%]">{addressTo}</span>
             </div>
             <div className="w-[80%]  flex justify-between text-lg">
               <span className="text-slate-600 font-sans font-semibold">
