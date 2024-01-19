@@ -1,6 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# 📦BoxedGHO
+Covert GHO & send across any chain into any token using the Box & Smart contract wallet integration
+
+BoxedGHO combines smart contract accounts & the box to embed GHO as payment input and convert to any desired recipient chain/token. The application allows users to top up your GHO balances with fiat using web2 payment gates, after GHO can now be swapped into any token on any chain to any recipient
+
+
+## Live Application
+
+https://boxed-gho-eth-global-x-lfgho-hackathon.vercel.app/
+
+##
+
+## How 📦BoxedGHO Work 💡
+
+- Our team hacked with ZeroDev/Wagmi( Viem ) & ConnectKit for smart account wallet integration with some gasless features. 
+
+- We use the Box from Decent.xyz to help us swap or swap & bridge GHO. 
+
+- The frontend stack is the app router version of the latest Next.js ( 14 ) 
+
+- we use African web2 payment provider Flutterwave to accept fiat payments to top up GHO.
+
+## How to Run it on local 
 
 First, run the development server:
 
@@ -20,17 +41,4 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
