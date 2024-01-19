@@ -12,7 +12,7 @@ const Receive = ({ setOpenReceiveModal }: BuyGHOProps) => {
   const [copy, setCopy] = useState<boolean>(false);
   const Success = () =>
     toast("Copied...", {
-      position: "top-right",
+      position: "bottom-center",
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -20,7 +20,8 @@ const Receive = ({ setOpenReceiveModal }: BuyGHOProps) => {
       draggable: true,
       progress: undefined,
       theme: "light",
-    });
+    }
+  );
   return (
     <div className="fixed  text-white flex flex-col w-screen backdrop-blur-2xl h-screen items-center justify-center top-0 left-0 right-0 bottom-0  bg-gradient-to-r from-slate-900 to-slate-700">
       <button
@@ -76,7 +77,6 @@ const Receive = ({ setOpenReceiveModal }: BuyGHOProps) => {
                 width={13}
                 height={13}
                 alt="copy"
-                className=""
               />
             </button>
           </div>

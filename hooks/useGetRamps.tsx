@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 
 export interface Ramp {
     address: string
+    addressTo: string
     email: string 
     txn: string
     ref: string 

@@ -7,11 +7,12 @@ import connectDB from '@/utils/db/mongodb'
 export async function POST(
     req: Request,
 ) {
-    const { address, email, txn, ref, amountGHO, amountUSD, status } =  await req.json()
+    const { address, addressTo, email, txn, ref, amountGHO, amountUSD, status } =  await req.json()
     try {
         await connectDB()
         const ramp = await Ramp.create({ 
             address: address,
+            addressTo: addressTo,
             email: email, 
             txn: txn, 
             ref: ref, 
