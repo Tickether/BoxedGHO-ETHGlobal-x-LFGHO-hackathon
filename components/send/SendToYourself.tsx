@@ -2,14 +2,12 @@ import { ghoTokenMain } from "@/helpers/constants";
 import { BoxActionContext } from "@/helpers/contexts/decentActionContext";
 import { RouteSelectContext } from "@/helpers/contexts/routeSelectContext";
 import { confirmRoute, executeTransaction } from "@/helpers/executeTransaction";
-import { useBalance } from "@/helpers/hooks/useBalance";
 import { useAmtInQuote, useAmtOutQuote } from "@/helpers/hooks/useSwapQuotes";
-import { roundValue } from "@/helpers/roundValue";
 import useDebounced from "@/helpers/useDebounced";
-import { ChainId, TokenInfo } from "@decent.xyz/box-common";
+import { ChainId } from "@decent.xyz/box-common";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { Hex, isAddress, zeroAddress } from "viem";
-import { useNetwork } from "wagmi";
+import { mainnet, useBalance, useNetwork } from "wagmi";
 import ChainSelectMenu from "../boxComps/ChainSelectorMenu";
 import TokenSelectorComponent from "../boxComps/TokenSelectorComponent";
 import { toast } from "react-toastify";
@@ -37,9 +35,6 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
   const srcToken = routeVars.srcToken;
   const srcChain = routeVars.srcChain;
 
-  const setSrcChain = (c: ChainId) => updateRouteVars({ srcChain: c });
-  const setSrcToken = (t: TokenInfo) => updateRouteVars({ srcToken: t });
-
   useEffect(() => {
     updateRouteVars({
       srcChain: ChainId.ETHEREUM,
@@ -48,10 +43,14 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
   },[srcChain, srcToken, updateRouteVars]);
 
   //use wamgi useBalance here instead
-  const { nativeBalance: srcNativeBalance, tokenBalance: srcTokenBalance } =
-    useBalance(connectedAddress, srcToken);
-  const srcTokenBalanceRounded = roundValue(srcTokenBalance, 2) ?? 1;
-
+  const mainnetGHO = useBalance({
+    address: connectedAddress,
+    token: "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f",
+    watch: true,
+    chainId: mainnet.id
+  });
+  console.log(mainnetGHO)
+  
   const [submitting, setSubmitting] = useState(false);
   const [submitErrorText, setSubmitErrorText] = useState("");
 
@@ -106,14 +105,14 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
   console.log(dstInputDebounced)
   useEffect(() => {
     const srcNum = Number(srcDisplay);
-    if (srcNum > srcTokenBalance) {
+    if (srcNum > Number(mainnetGHO.data?.formatted)) {
       setSubmitErrorText(
         "Insufficient funds. Try onramping to fill your wallet.",
       );
     } else {
       setSubmitErrorText("");
     }
-  }, [srcTokenBalance, srcDisplay]);
+  }, [mainnetGHO.data?.formatted, srcDisplay]);
 
   const srcSpinning = amtOutLoading || dstDebounceWaiting;
   const dstSpinning = amtInLoading || srcDebounceWaiting;
@@ -126,6 +125,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
     srcSpinning ||
     dstSpinning ||
     !(Number(srcInputDebounced) || Number(dstInputDebounced)) ||
+    forOthers && pastedAddress == '' ||
     submitting;
   
   const confirmDisabled = !actionResponse?.tx;
@@ -181,11 +181,12 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
               disabled={srcSpinning || submitting}
               placeholder="0"
             />
-            <button className="border-[1px] text-white h-11 w-[20%] rounded-lg hover:bg-slate-500 px-3">
-              Max
-            </button>
-            <span className="flex text-white border-[1px] h-11 justify-center rounded-lg items-center w-[30%]">
-            {srcTokenBalanceRounded}/GHO
+            {''}<span className="text-5xl text-blue-200">{'//'}</span>{''}
+            <span className="flex text-white border-[1px] h-11 justify-center rounded-lg items-center w-[35%]">
+            {mainnetGHO.data?.formatted}
+            </span>
+            <span className="flex text-white border-[1px] h-11 justify-center rounded-lg items-center w-[15%]">
+            {mainnetGHO.data?.symbol}
             </span>
           </div>
 
@@ -290,12 +291,14 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
               )
             }
           </div>
-          <div className={`flex h-full  w-[27%] ${forOthers ? 'mt-6' : 'mt-0'}`}>
+          <div className={`flex h-full  w-[27%] ${forOthers ? 'mt-5' : 'mt-0'}`}>
           {showContinue ? (
             <button
               className={
-                `${continueDisabled ? 'bg-gray-300 text-gray-600 ' : 'bg-black text-white '}` +
-                "border-2 flex p-3 rounded-2xl hover:bg-green-500 hover:text-black border-solid font-semibold text-l border-white text-center"
+                `${continueDisabled ? 'bg-gray-300 text-gray-600 ' : 'bg-green-300 text-green-900 '}` +
+                "text-center font-medium" +
+                " w-full rounded-lg p-2 mt-4" +
+                " relative flex items-center justify-center"
               }
               onClick={() => confirmRoute({
                 chain: chain!,
@@ -320,7 +323,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
           ) : (
             <button
               className={
-                `${confirmDisabled ? 'bg-gray-300 text-gray-600 ': 'bg-primary text-white '}` +
+                `${confirmDisabled ? 'bg-gray-300 text-gray-600 ': 'bg-purple-600 text-white'}` +
                 "text-center font-medium" +
                 " w-full rounded-lg p-2 mt-4" +
                 " relative flex items-center justify-center"
@@ -351,6 +354,11 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
             />
           </div>
         </div>
+        {hash && (
+          <div>
+            <p>{hash}</p>
+          </div>
+        )}
       </div>
 
       {/* Transaction Status Card */}

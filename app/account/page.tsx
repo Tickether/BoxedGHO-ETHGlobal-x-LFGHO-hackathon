@@ -4,7 +4,6 @@ import Send from "@/components/send/Send";
 import BuyGHO from "@/components/buyGho/BuyGHO";
 import { useEffect, useState } from "react";
 import { sepolia, useAccount, useBalance } from "wagmi";
-import { GHO_TESTNET } from "@/helpers/constants";
 import { getTokenUSD } from "@/utils/getTokenUSD";
 import Receive from "@/components/receive/Receive";
 
@@ -16,7 +15,7 @@ export default function Account() {
   const [openBuyModal, setOpenBuyModal] = useState<boolean>(false);
   const [tokenRateUSD, setTokenRateUSD] = useState<number | null>(null);
 
-  const GHO = useBalance({
+  const sepoliaGHO = useBalance({
     address: address,
     token: "0xc4bF5CbDaBE595361438F8c6a187bDc330539c60",
     watch: true,
@@ -50,10 +49,10 @@ export default function Account() {
           <>
             <div className="flex flex-col gap-3">
               <p className="text-6xl gap-2">
-                <span>{GHO.data?.formatted} GHO</span>
+                <span>{sepoliaGHO.data?.formatted} GHO</span>
               </p>
               <p className="text-center">
-                <span>$ {Number(GHO.data?.formatted) * tokenRateUSD!}</span>
+                <span>$ {Number(sepoliaGHO.data?.formatted) * tokenRateUSD!}</span>
               </p>
             </div>
           </>
