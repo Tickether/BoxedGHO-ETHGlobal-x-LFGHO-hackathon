@@ -282,7 +282,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
         <div className="w-full flex justify-center mt-11 pb-11">
           <button
             className="border-[1px] w-[80%] text p-3  rounded-lg hover:bg-green-300 font-sans font-semibold"
-            disabled={pastedAddress == ''}
+            disabled={payAddress == zeroAddress || pastedAddress == ''}
             onClick={doPayUSD}
           >
             Buy Now
