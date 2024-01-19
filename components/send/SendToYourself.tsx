@@ -8,14 +8,16 @@ import { roundValue } from "@/helpers/roundValue";
 import useDebounced from "@/helpers/useDebounced";
 import { ChainId, TokenInfo } from "@decent.xyz/box-common";
 import React, { Fragment, useContext, useEffect, useState } from "react";
-import { Hex } from "viem";
+import { Hex, isAddress, zeroAddress } from "viem";
 import { useNetwork } from "wagmi";
 import ChainSelectMenu from "../boxComps/ChainSelectorMenu";
 import TokenSelectorComponent from "../boxComps/TokenSelectorComponent";
+import { toast } from "react-toastify";
+import Image from "next/image";
 
 
 
-const SendToYourself = ({ connectedAddress, publicClient }: any) => {
+const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
 
   const { routeVars, updateRouteVars } = useContext(RouteSelectContext);
   const {
@@ -27,6 +29,9 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
 
   const [showContinue, setShowContinue] = useState(true);
   const [hash, setHash] = useState<Hex>();
+
+  const [payAddress, setPayAddress] = useState<`0x${string}`>(zeroAddress);
+  const [pastedAddress, setPastedAddress] = useState<string>('');
 
   const { dstChain, dstToken } = routeVars;
   const srcToken = routeVars.srcToken;
@@ -45,7 +50,7 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
   //use wamgi useBalance here instead
   const { nativeBalance: srcNativeBalance, tokenBalance: srcTokenBalance } =
     useBalance(connectedAddress, srcToken);
-  const srcTokenBalanceRounded = roundValue(srcTokenBalance, 2) ?? 0;
+  const srcTokenBalanceRounded = roundValue(srcTokenBalance, 2) ?? 1;
 
   const [submitting, setSubmitting] = useState(false);
   const [submitErrorText, setSubmitErrorText] = useState("");
@@ -124,6 +129,39 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
     submitting;
   
   const confirmDisabled = !actionResponse?.tx;
+
+  useEffect(()=>{
+    if (forOthers) {
+      setPayAddress(`0x${pastedAddress}`!)
+    } else {
+      setPayAddress(connectedAddress!)
+    }
+  }, [pastedAddress, connectedAddress, forOthers])
+
+  const handlePaste = async () => {
+    const clipboardText = await navigator.clipboard.readText();
+    if (isAddress(clipboardText)) {
+      setPastedAddress(clipboardText);
+    } else {
+      //toast 
+      const NotAddress = () =>
+        console.log('jhjgjhgj')
+        toast("Please Paste Valid Address...", {
+          position: 'bottom-center',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+    }
+  };
+  const handleClearInput = () => {
+    setPastedAddress('')
+  };
 
   return (
     <main className="w-[60%] h-full items-start mt-4 flex justify-around">
@@ -211,59 +249,99 @@ const SendToYourself = ({ connectedAddress, publicClient }: any) => {
             ))}
         </div>
         <div className="text-red-500">{submitErrorText}</div>
-        <div className="mt-auto"></div>
-        <div className="w-full my-5 pr-5  flex justify-end">
-        {showContinue ? (
-          <button
-            className={
-              `${continueDisabled ? 'bg-gray-300 text-gray-600 ' : 'bg-black text-white '}` +
-              "border-2 flex  justify-center p-3 rounded-2xl hover:bg-green-500 hover:text-black border-solid font-semibold text-l border-white"
+        <div className={` ${submitErrorText !='' ? 'mt-auto w-[96%] pt-5 border-b-[1px] border-white' : 'mt-auto'}`}></div>
+        <div className="flex w-full h-full justify-between px-3 gap-3 mt-5">
+          <div className="flex w-[73%]">
+            {
+              forOthers 
+              ?(
+                <>
+                  <div className="flex flex-col gap-2 w-full">
+                    <div className="flex gap-2">
+                      <label className="text-blue-800">Paste Pay Address</label>
+                      {
+                        pastedAddress!.length >= 1 
+                        ? (
+                          <div className="cursor-pointer" onClick={handleClearInput}>
+                            <Image src='/clear.svg' alt='' width={23} height={23} />
+                          </div>
+                        )
+                        : (
+                          <div className="cursor-pointer" onClick={handlePaste}>
+                            <Image src='/copy.svg' alt='' width={23} height={23} />
+                          </div>
+                        )
+                      }
+                    </div>
+                    <input
+                      className="text-blue-300 w-full h-11 text-center"
+                      required
+                      placeholder={zeroAddress}
+                      value={pastedAddress!}
+                      onPaste={handlePaste}
+                      disabled
+                    />
+                    
+                  </div>
+                </>
+              )
+              :(
+                <></>
+              )
             }
-            onClick={() => confirmRoute({
-              chain: chain!,
-            srcChain,
-            srcToken,
-            dstToken,
-            setBoxActionArgs,
-            updateRouteVars,
-            srcInputVal: srcInputDebounced!,
-            dstInputVal: dstInputDebounced!,
-            connectedAddress,
-            continueDisabled,
-            setSubmitting,
-            setShowContinue,
-            srcDisplay,
-            recipient: '0xAcCC1fe6537eb8EB56b31CcFC48Eb9363e8dd32E' //custom receiver
-            })}
-            disabled={continueDisabled}
-          >
-            Confirm Selections
-          </button>
-        ) : (
-          <button
-            className={
-              `${confirmDisabled ? 'bg-gray-300 text-gray-600 ': 'bg-primary text-white '}` +
-              "text-center font-medium" +
-              " w-full rounded-lg p-2 mt-4" +
-              " relative flex items-center justify-center"
-            }
-            disabled={confirmDisabled}
-            onClick={() => executeTransaction({
-              actionResponse,
-              setSubmitting,
-              setHash,
-              setShowContinue,
-              publicClient,
-              connectedAddress, 
-              srcChain: chain?.id!,
-            })}
-          >
-            Swap
-            {submitting && <div className="absolute right-4 load-spinner"></div>}
-          </button>
-        )}
+          </div>
+          <div className={`flex h-full  w-[27%] ${forOthers ? 'mt-6' : 'mt-0'}`}>
+          {showContinue ? (
+            <button
+              className={
+                `${continueDisabled ? 'bg-gray-300 text-gray-600 ' : 'bg-black text-white '}` +
+                "border-2 flex p-3 rounded-2xl hover:bg-green-500 hover:text-black border-solid font-semibold text-l border-white text-center"
+              }
+              onClick={() => confirmRoute({
+                chain: chain!,
+                srcChain,
+                srcToken,
+                dstToken,
+                setBoxActionArgs,
+                updateRouteVars,
+                srcInputVal: srcInputDebounced!,
+                dstInputVal: dstInputDebounced!,
+                connectedAddress,
+                continueDisabled,
+                setSubmitting,
+                setShowContinue,
+                srcDisplay,
+                recipient: payAddress //custom receiver
+              })}
+              disabled={continueDisabled}
+            >
+              Confirm Selections
+            </button>
+          ) : (
+            <button
+              className={
+                `${confirmDisabled ? 'bg-gray-300 text-gray-600 ': 'bg-primary text-white '}` +
+                "text-center font-medium" +
+                " w-full rounded-lg p-2 mt-4" +
+                " relative flex items-center justify-center"
+              }
+              disabled={confirmDisabled}
+              onClick={() => executeTransaction({
+                actionResponse,
+                setSubmitting,
+                setHash,
+                setShowContinue,
+                publicClient,
+                connectedAddress, 
+                srcChain: chain?.id!,
+              })}
+            >
+              Swap
+              {submitting && <div className="absolute right-4 load-spinner"></div>}
+            </button>
+          )}
+          </div>
         </div>
-
         <div className="flex items-end w-[95%] justify-center mt-10 mb-2 h-full">
           {/* progress bar  */}
           <div className="w-full bg-gray-200 rounded-full  h-2.5 ">

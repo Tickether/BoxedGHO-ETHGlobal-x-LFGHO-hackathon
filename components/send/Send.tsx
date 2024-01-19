@@ -11,11 +11,10 @@ interface SendProps {
 
 function Send({ setOpenSendModal }: SendProps) {
   const { address } = useAccount()
-    const { chain } = useNetwork();
-    const { publicClient } = configureChains([chain || mainnet], [publicProvider()])
+  const { chain } = useNetwork();
+  const { publicClient } = configureChains([chain || mainnet], [publicProvider()])
 
-  const [sendToYourself, setSendToYourself] = useState<boolean>(false);
-  const [sendToOther, setSendToOther] = useState<boolean>(false);
+  const [forOthers, setForOthers] = useState<boolean | null>(null)
   const [progress, setProgress] = useState<string>("20%");
   return (
     <main className=" fixed flex flex-col w-screen bg-opacity-7 h-screen items-center justify-center top-0 left-0 right-0 bottom-0  bg-gradient-to-r from-slate-900 to-slate-700">
@@ -30,7 +29,7 @@ function Send({ setOpenSendModal }: SendProps) {
 
       <div
         className={
-          sendToOther == sendToYourself
+          forOthers == null
             ? "flex w-[60%] flex-col  justify-between "
             : "hidden"
         }
@@ -49,7 +48,7 @@ function Send({ setOpenSendModal }: SendProps) {
             </span>
             <div
               onClick={() => {
-                setSendToYourself(true);
+                setForOthers(false);
                 setProgress("40%");
               }}
               className="pl-4 text-xl hover:bg-gradient-to-r from-slate-600 to-slate-800  bg-slate-700 font-sans font-bold cursor-pointer flex justify-center items-center shadow-2xl w-[300px] py-3 rounded-3xl text-white"
@@ -58,7 +57,7 @@ function Send({ setOpenSendModal }: SendProps) {
             </div>
             <div
               onClick={() => {
-                setSendToOther(true);
+                setForOthers(true);
                 setProgress("40%");
               }}
               className="pl-4 text-xl  hover:bg-gradient-to-r from-slate-600 to-slate-800  bg-slate-700  font-sans font-bold cursor-pointer flex justify-center items-center shadow-2xl w-[300px] py-3 rounded-3xl text-white"
@@ -77,22 +76,12 @@ function Send({ setOpenSendModal }: SendProps) {
       </div>
       <div
         className={
-          sendToOther
-            ? "w-full h-[80vh] flex   justify-around items-center  "
-            : "hidden"
-        }
-      >
-        {/**<SendToOthers connectedAddress={address!} publicClient={publicClient}/> */}
-      </div>
-
-      <div
-        className={
-          sendToYourself
+          forOthers !== null
             ? "w-full h-[80vh] flex   justify-around items-center "
             : "hidden"
         }
       >
-        <SendToYourself connectedAddress={address!} publicClient={publicClient}/>
+        <SendToYourself connectedAddress={address!} publicClient={publicClient} forOthers={forOthers}/>
       </div>
     </main>
   );
