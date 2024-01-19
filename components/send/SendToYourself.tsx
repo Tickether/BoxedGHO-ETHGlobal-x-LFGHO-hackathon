@@ -1,7 +1,7 @@
 import { ghoTokenMain } from "@/helpers/constants";
 import { BoxActionContext } from "@/helpers/contexts/decentActionContext";
 import { RouteSelectContext } from "@/helpers/contexts/routeSelectContext";
-import { confirmRoute, executeTransaction } from "@/helpers/executeTransaction";
+//import { confirmRoute, executeTransaction } from "@/helpers/executeTransaction";
 import { useAmtInQuote, useAmtOutQuote } from "@/helpers/hooks/useSwapQuotes";
 import useDebounced from "@/helpers/useDebounced";
 import { ChainId } from "@decent.xyz/box-common";
@@ -12,6 +12,7 @@ import ChainSelectMenu from "../boxComps/ChainSelectorMenu";
 import TokenSelectorComponent from "../boxComps/TokenSelectorComponent";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { useApproveExecuteOp } from "@/hooks/useApproveExecuteOp";
 
 const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
   const { routeVars, updateRouteVars } = useContext(RouteSelectContext);
@@ -158,6 +159,25 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
     setPastedAddress("");
   };
 
+  const {confirmRoute, executeTransaction} = useApproveExecuteOp({
+    chain: chain!,
+    srcChain,
+    srcToken,
+    dstToken,
+    setBoxActionArgs,
+    updateRouteVars,
+    srcInputVal: srcInputDebounced!,
+    dstInputVal: dstInputDebounced!,
+    continueDisabled,
+    srcDisplay,
+    recipient: payAddress, //custom receiver
+    actionResponse,
+    setSubmitting,
+    setHash,
+    setShowContinue,
+    publicClient,
+    connectedAddress,
+  })
   return (
     <main className="w-[1100px] h-[600px] items-start mt-4 flex justify-around">
       <div className="bg-slate-900 w-[60%] flex h-fit flex-col pt-10  shadow-sm shadow-blue-500   items-center  rounded-2xl">
@@ -308,22 +328,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
                   " relative flex items-center justify-center"
                 }
                 onClick={() =>
-                  confirmRoute({
-                    chain: chain!,
-                    srcChain,
-                    srcToken,
-                    dstToken,
-                    setBoxActionArgs,
-                    updateRouteVars,
-                    srcInputVal: srcInputDebounced!,
-                    dstInputVal: dstInputDebounced!,
-                    connectedAddress,
-                    continueDisabled,
-                    setSubmitting,
-                    setShowContinue,
-                    srcDisplay,
-                    recipient: payAddress, //custom receiver
-                  })
+                  confirmRoute()
                 }
                 disabled={continueDisabled}
               >
@@ -343,15 +348,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
                 }
                 disabled={confirmDisabled}
                 onClick={() =>
-                  executeTransaction({
-                    actionResponse,
-                    setSubmitting,
-                    setHash,
-                    setShowContinue,
-                    publicClient,
-                    connectedAddress,
-                    srcChain: chain?.id!,
-                  })
+                  executeTransaction()
                 }
               >
                 Swap
