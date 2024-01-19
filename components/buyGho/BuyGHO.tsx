@@ -6,7 +6,7 @@ import { isAddress, parseUnits, zeroAddress } from "viem";
 import { useAccount } from "wagmi";
 import { ZeroDevWeb3Auth } from "@zerodev/web3auth";
 import { getTokenUSD } from "@/utils/getTokenUSD";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface BuyGHOProps {
   setOpenBuyModal: (openSendModal: boolean) => void;
@@ -14,11 +14,11 @@ interface BuyGHOProps {
 const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
   const { address, isConnected } = useAccount();
   const [payAddress, setPayAddress] = useState<`0x${string}`>(zeroAddress);
-  const [pastedAddress, setPastedAddress] = useState<string>('');
+  const [pastedAddress, setPastedAddress] = useState<string>("");
   const [ghoamount, setGhoamount] = useState<string>("");
   const [email, setEmail] = useState<string | null>(null);
   const [tokenRateUSD, setTokenRateUSD] = useState<number | null>(null);
-  const [forOthers, setForOthers] = useState<boolean>(false)
+  const [forOthers, setForOthers] = useState<boolean>(false);
 
   const getEmail = async () => {
     const zeroDevWeb3Auth = ZeroDevWeb3Auth.getInstance(["<project-id>"]);
@@ -33,71 +33,76 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
     }
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     if (forOthers) {
-      setPayAddress(`0x${pastedAddress}`!)
+      setPayAddress(`0x${pastedAddress?.slice(2)}`!);
     } else {
-      setPayAddress(address!)
+      setPayAddress(address!);
     }
-  }, [pastedAddress, address, forOthers])
-
+  }, [pastedAddress, address, forOthers]);
+  console.log(payAddress);
   const handlePaste = async () => {
     const clipboardText = await navigator.clipboard.readText();
+    console.log(clipboardText);
     if (isAddress(clipboardText)) {
       setPastedAddress(clipboardText);
     } else {
-      //toast 
-      const NotAddress = () =>
-        console.log('jhjgjhgj')
-        toast("Please Paste Valid Address...", {
-          position: 'bottom-center',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
+      //toast
+      const NotAddress = () => console.log("jhjgjhgj");
+      toast("Please Paste Valid Address...", {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
   const handleClearInput = () => {
-    setPastedAddress('')
-  };  
+    setPastedAddress("");
+  };
 
   const handleToggle = () => {
-    setPastedAddress('')
-    setForOthers(!forOthers)
-  }
+    setPastedAddress("");
+    setForOthers(!forOthers);
+  };
 
-  
-
-  const postRamp = async (address: string, addressTo: string, email: string, txn: string, ref: string, amountGHO: string, amountUSD: string, status: string) => {
+  const postRamp = async (
+    address: string,
+    addressTo: string,
+    email: string,
+    txn: string,
+    ref: string,
+    amountGHO: string,
+    amountUSD: string,
+    status: string
+  ) => {
     try {
-      const res = await fetch('api/postRamp', {
-        method: 'POST',
+      const res = await fetch("api/postRamp", {
+        method: "POST",
         headers: {
-        'Content-type': 'application/json'
+          "Content-type": "application/json",
         },
         body: JSON.stringify({
           address,
           addressTo,
           email,
           txn,
-          ref, 
-          amountGHO, 
-          amountUSD,  
+          ref,
+          amountGHO,
+          amountUSD,
           status,
-        })
-      }) 
-      const data =  await res.json()
-      console.log(data)
+        }),
+      });
+      const data = await res.json();
+      console.log(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
-  
+  };
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_TEST_KEY,
@@ -140,8 +145,17 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
     const txnHash = await sellGHO(amountParsed!, payAddress);
     //save offchain depo info
     if (txnHash) {
-      await postRamp( address!, payAddress!, email!, txnHash!, ref, ghoamount!, String(Number(ghoamount) + Number(ghoamount) * 0.06), 'success' )
-  }
+      await postRamp(
+        address!,
+        payAddress!,
+        email!,
+        txnHash!,
+        ref,
+        ghoamount!,
+        String(Number(ghoamount) + Number(ghoamount) * 0.06),
+        "success"
+      );
+    }
   };
 
   useEffect(() => {
@@ -218,53 +232,48 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
               checked={forOthers}
               onChange={handleToggle}
             />
-            <div className={`slider absolute cursor-pointer ${forOthers ? 'bg-blue-500' : 'bg-gray-300'} w-10 h-6 rounded-full transition-transform duration-300 ease-in-out transform`}>
+            <div
+              className={`slider absolute cursor-pointer ${
+                forOthers ? "bg-blue-500" : "bg-gray-300"
+              } w-10 h-6 rounded-full transition-transform duration-300 ease-in-out transform`}
+            >
               <div
                 className={`toggle absolute w-5 h-5 bg-white rounded-full transition-transform duration-300 ease-in-out transform pt-6 ${
-                  forOthers ? 'translate-x-full' : 'translate-x-0'
+                  forOthers ? "translate-x-full" : "translate-x-0"
                 }`}
               />
             </div>
           </label>
         </div>
         <div className="flex w-full">
-          {
-            forOthers 
-            ?(
-              <>
-                <div className="flex flex-col gap-2 w-full">
-                  <div className="flex gap-2">
-                    <label className="text-blue-800">Paste Pay Address</label>
-                    {
-                      pastedAddress!.length >= 1 
-                      ? (
-                        <div className="cursor-pointer" onClick={handleClearInput}>
-                          <Image src='/clear.svg' alt='' width={23} height={23} />
-                        </div>
-                      )
-                      : (
-                        <div className="cursor-pointer" onClick={handlePaste}>
-                          <Image src='/copy.svg' alt='' width={23} height={23} />
-                        </div>
-                      )
-                    }
-                  </div>
-                  <input
-                    className="text-blue-300 w-full h-11 text-center"
-                    required
-                    placeholder={zeroAddress}
-                    value={pastedAddress!}
-                    onPaste={handlePaste}
-                    disabled
-                  />
-                  
+          {forOthers ? (
+            <>
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex gap-2">
+                  <label className="text-blue-800">Paste Pay Address</label>
+                  {pastedAddress!.length >= 1 ? (
+                    <div className="cursor-pointer" onClick={handleClearInput}>
+                      <Image src="/clear.svg" alt="" width={23} height={23} />
+                    </div>
+                  ) : (
+                    <div className="cursor-pointer" onClick={handlePaste}>
+                      <Image src="/copy.svg" alt="" width={23} height={23} />
+                    </div>
+                  )}
                 </div>
-              </>
-            )
-            :(
-              <></>
-            )
-          }
+                <input
+                  className="text-blue-300 w-full h-11 text-center"
+                  required
+                  placeholder={zeroAddress}
+                  value={pastedAddress!}
+                  onPaste={handlePaste}
+                  disabled
+                />
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
         </div>
         <div className=" w-full  px-3 flex justify-between">
           <span>Fees</span>
@@ -282,7 +291,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
         <div className="w-full flex justify-center mt-11 pb-11">
           <button
             className="border-[1px] w-[80%] text p-3  rounded-lg hover:bg-green-300 font-sans font-semibold"
-            disabled={forOthers && pastedAddress == ''}
+            disabled={forOthers && pastedAddress == ""}
             onClick={doPayUSD}
           >
             Buy Now
