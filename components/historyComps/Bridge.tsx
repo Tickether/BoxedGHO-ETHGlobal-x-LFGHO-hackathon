@@ -48,9 +48,7 @@ const BridgeComponent = ({ BridgeData }: { BridgeData: Bridge }) => {
               {amountBridged} {bridgeToken}
             </span>
             <span
-              onClick={() =>
-                window.open(`https://sepolia.etherscan.io/tx/${txn}`)
-              }
+              onClick={() => window.open(`https://layerzeroscan.com/tx/${txn}`)}
               className="cursor-pointer hover:bg-white hover:text-black px-2 rounded-lg"
             >
               {` txhash : ${txn.slice(0, 4)}...${txn.slice(
@@ -61,7 +59,7 @@ const BridgeComponent = ({ BridgeData }: { BridgeData: Bridge }) => {
             <span
               className="cursor-pointer hover:bg-white hover:text-black px-2 rounded-lg"
               onClick={() =>
-                window.open(`https://sepolia.etherscan.io/address/${addressTo}`)
+                window.open(`https://etherscan.io/address/address/${addressTo}`)
               }
             >
               {` reciver : ${addressTo.slice(0, 4)}...${addressTo.slice(
@@ -149,11 +147,11 @@ const BridgeComponent = ({ BridgeData }: { BridgeData: Bridge }) => {
 
             <button
               onClick={() => {
-                window.open(`https://sepolia.etherscan.io/tx/${txn}`);
+                window.open(`https://layerzeroscan.com/tx/${txn}`);
               }}
               className="border-white border-2 w-[200px] rounded-xl p-3 text-lg hover:bg-black "
             >
-              view on etherscan
+              view on LayerZero
             </button>
           </div>
         </div>
