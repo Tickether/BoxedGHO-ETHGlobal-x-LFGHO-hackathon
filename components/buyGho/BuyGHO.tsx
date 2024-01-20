@@ -224,7 +224,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="flex justify-center items-center gap-2">
           <label className="relative inline-block w-10 h-6">
             <input
               type="checkbox"
@@ -244,6 +244,7 @@ const BuyGHO = ({ setOpenBuyModal }: BuyGHOProps) => {
               />
             </div>
           </label>
+          <span className={forOthers ? 'text-blue-200 font-medium' : 'text-blue-100 font-normal'  }>{ forOthers ? 'Buying GHO for Others' : 'Buy GHO for Others'}</span>
         </div>
         <div className="flex w-full">
           {forOthers ? (

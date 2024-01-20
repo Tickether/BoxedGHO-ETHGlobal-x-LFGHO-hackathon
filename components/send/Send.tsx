@@ -15,7 +15,7 @@ function Send({ setOpenSendModal }: SendProps) {
   const { publicClient } = configureChains([chain || mainnet], [publicProvider()])
 
   const [forOthers, setForOthers] = useState<boolean | null>(null)
-  const [progress, setProgress] = useState<string>("20%");
+  const [progress, setProgress] = useState<string>("25%");
   return (
     <main className=" fixed flex flex-col w-screen bg-opacity-7 h-screen items-center justify-center top-0 left-0 right-0 bottom-0  bg-gradient-to-r from-slate-900 to-slate-700">
       <button

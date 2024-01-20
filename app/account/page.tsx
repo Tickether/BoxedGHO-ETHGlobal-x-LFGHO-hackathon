@@ -72,7 +72,7 @@ export default function Account() {
             }}
             className="border-2 p-3 rounded-2xl hover:bg-slate-700  border-solid font-semibold text-l border-white"
           >
-            ↗️ Send
+            📦 Box GHO
           </button>
           <button
             onClick={() => {

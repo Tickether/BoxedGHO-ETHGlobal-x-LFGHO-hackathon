@@ -6,9 +6,11 @@ import { toast } from "react-toastify";
 import { switchNetwork } from "@wagmi/core";
 import { generateDecentAmountInParams, generateDecentAmountOutParams } from "@/helpers/generateDecentParams";
 import { useWaitForTransaction } from "wagmi";
+import { chainNames } from "@/helpers/contexts/routeSelectContext";
 
 export const useApproveExecuteOp = ({
     srcChain,
+    dstChain,
     srcToken,
     dstToken,
     setBoxActionArgs,
@@ -20,6 +22,7 @@ export const useApproveExecuteOp = ({
     dstInputVal,
     continueDisabled,
     srcDisplay,
+    dstDisplay,
     contractAddress,
     signature,
     args,
@@ -31,6 +34,7 @@ export const useApproveExecuteOp = ({
     setShowContinue
   }: {
     srcChain: ChainId,
+    dstChain: ChainId,
     srcToken: TokenInfo,
     dstToken: TokenInfo,
     setBoxActionArgs: any,
@@ -42,6 +46,7 @@ export const useApproveExecuteOp = ({
     dstInputVal?: string,
     continueDisabled?: boolean,
     srcDisplay?: string,
+    dstDisplay?:string,
     contractAddress?: Address,
     signature?: string,
     args?: any
@@ -52,6 +57,9 @@ export const useApproveExecuteOp = ({
     setHash?: (hash: Hex) => void,
     setShowContinue?: (showContinue: boolean) => void,
   }) => {
+
+
+    //approve
     const approveCalldata = actionResponse ? encodeFunctionData({
         abi: erc20ABI,
         functionName: 'approve',
@@ -66,17 +74,15 @@ export const useApproveExecuteOp = ({
     const approvalUserOp = useSendUserOperation(prepareApprovalUserOp.config);
     console.log(approvalUserOp.data)
 
+
+    
+    //execute
     const defaultTx = {
         to: undefined, // bridge
         data: undefined,
         value: undefined,
     }
-
     const tx = actionResponse ? actionResponse?.tx as EvmTransaction : defaultTx
-
-    
-
-    //execute
     const prepareExecuteUserOp = usePrepareSendUserOperation({
         to: tx.to, // bridge
         data: tx.data,
@@ -84,21 +90,70 @@ export const useApproveExecuteOp = ({
     })
     console.log(prepareExecuteUserOp.config)
     const exucuteUserOp = useSendUserOperation(prepareExecuteUserOp.config);
+    console.log(exucuteUserOp.data)
+
+    const postBridge = async (
+        address: string,
+        addressTo: string,
+        txn: string,
+        amountGHO: string,
+        amountBridged: string,
+        bridgeChain: string,
+        bridgeToken: string
+    ) => {
+        try {
+            const res = await fetch("api/postBridge", {
+                method: "POST",
+                headers: {
+                "Content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    address,
+                    addressTo,
+                    txn,
+                    amountGHO,
+                    amountBridged,
+                    bridgeChain,
+                    bridgeToken,
+                }),
+            });
+            const data = await res.json();
+            console.log(data);
+        } catch (error) {
+          console.log(error);
+        }
+    };
 
     // Wait on the status of the tx
-    
-    useWaitForTransaction({
-        hash: approvalUserOp.data?.hash,
-        enabled: !!approvalUserOp.data,
-        onSuccess(data) {
-            console.log("Approval was successful.")
-        }
-    })
-    useWaitForTransaction({
+    const waitForExecutedOp = useWaitForTransaction({
         hash: exucuteUserOp.data?.hash,
-        enabled: !!exucuteUserOp.data,
-        onSuccess(data) {
-            console.log("Approval was successful.")
+        confirmations: 1,
+        enabled: true,
+        onSuccess (data) {
+            console.log("Bridge was successful.", data)
+            console.log(
+                connectedAddress!,
+                recipient!,
+                exucuteUserOp.data?.hash!,
+                srcInputVal!,
+                dstDisplay!,
+                chainNames[dstChain],
+                dstToken.name  
+            )
+            //set Tx Hash from Executed OP
+            if (exucuteUserOp.data?.hash) {
+                setHash?.(exucuteUserOp.data?.hash); 
+                postBridge(
+                    connectedAddress!,
+                    recipient!,
+                    exucuteUserOp.data?.hash!,
+                    srcInputVal!,
+                    dstDisplay!,
+                    chainNames[dstChain],
+                    dstToken.name  
+                );
+                console.log("Bridge Offchain successful.", data)
+            }  
         }
     })
 
@@ -119,6 +174,7 @@ export const useApproveExecuteOp = ({
           args: [user, spender],
         });
     };
+
 
     const confirmRoute = async () => {
         const toAddress = recipient || connectedAddress;
@@ -180,6 +236,7 @@ export const useApproveExecuteOp = ({
         }
     };
 
+
     const executeTransaction = async () => {
       
         if (!actionResponse) {
@@ -204,21 +261,16 @@ export const useApproveExecuteOp = ({
                     )   {
                         approvalUserOp.sendUserOperation!()
                         console.log(approvalUserOp.data)
-
-                        
                         const approveResult = await publicClient({
-                        chainId: srcChain,
+                            chainId: srcChain,
                         }).waitForTransactionReceipt({ hash: approvalUserOp.data?.hash });
                         console.log('approved!', approveResult);
-                        
+
                         //send tx as from zerodev0
                         exucuteUserOp.sendUserOperation!()
                         console.log(exucuteUserOp.data)
-                
-                        // old stuff replaced hash
-                        setSubmitting?.(false);
-                        setHash?.(exucuteUserOp.data?.hash!);
- 
+                        
+                        return;
                     } else if (
                         amountApproved >= (actionResponse?.tokenPayment?.amount || BigInt(0))
                     ) {
@@ -227,13 +279,9 @@ export const useApproveExecuteOp = ({
                         exucuteUserOp.sendUserOperation!()
                         console.log(exucuteUserOp.data)
                 
-                        // old stuff replaced hash
-                        setSubmitting?.(false);
-                        setHash?.(exucuteUserOp.data?.hash!);
+                        return;
                     }
                 }
-                
-                
             } catch (e) {
                 toast.error('Error sending transaction.', {
                     position: toast.POSITION.BOTTOM_CENTER

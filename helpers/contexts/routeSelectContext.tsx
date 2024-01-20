@@ -13,8 +13,8 @@ export const chainIcons: { [key: number]: string } = {
 
 export const chainNames: { [key: number]: string } = {
   [ChainId.ETHEREUM]: "Ethereum",
-  [ChainId.OPTIMISM]: "OP Mainnet",
-  [ChainId.ARBITRUM]: "Arbitrum One",
+  [ChainId.OPTIMISM]: "Optimism",
+  [ChainId.ARBITRUM]: "Arbitrum",
   [ChainId.BASE]: "Base",
 };
 

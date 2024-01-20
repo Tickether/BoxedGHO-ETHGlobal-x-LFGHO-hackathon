@@ -1,7 +1,6 @@
 import { ghoTokenMain } from "@/helpers/constants";
 import { BoxActionContext } from "@/helpers/contexts/decentActionContext";
 import { RouteSelectContext } from "@/helpers/contexts/routeSelectContext";
-//import { confirmRoute, executeTransaction } from "@/helpers/executeTransaction";
 import { useAmtInQuote, useAmtOutQuote } from "@/helpers/hooks/useSwapQuotes";
 import useDebounced from "@/helpers/useDebounced";
 import { ChainId } from "@decent.xyz/box-common";
@@ -163,6 +162,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
   const {confirmRoute, executeTransaction} = useApproveExecuteOp({
     chain: chain!,
     srcChain,
+    dstChain,
     srcToken,
     dstToken,
     setBoxActionArgs,
@@ -171,6 +171,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
     dstInputVal: dstInputDebounced!,
     continueDisabled,
     srcDisplay,
+    dstDisplay,
     recipient: payAddress, //custom receiver
     actionResponse,
     setSubmitting,
@@ -194,7 +195,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
               type="text"
               value={srcDisplay}
               onChange={(e) => handleSrcAmtChange(e.target.value)}
-              disabled={srcSpinning || submitting}
+              disabled={srcSpinning || submitting || !!hash}
               placeholder="0"
             />
             {""}
@@ -223,7 +224,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
                 type="text"
                 value={dstDisplay}
                 onChange={(e) => handleDstAmtChange(e.target.value)}
-                disabled={dstSpinning || submitting}
+                disabled={dstSpinning || submitting || !!hash}
                 placeholder="0"
               />
             </div>
@@ -331,7 +332,7 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
                 onClick={() =>
                   confirmRoute()
                 }
-                disabled={continueDisabled}
+                disabled={continueDisabled || !!hash}
               >
                 Confirm Selections
               </button>
@@ -347,15 +348,21 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
                   " w-full rounded-lg p-2 mt-4" +
                   " relative flex items-center justify-center"
                 }
-                disabled={confirmDisabled}
+                disabled={confirmDisabled || !!hash}
                 onClick={() =>
                   executeTransaction()
                 }
               >
-                Swap
-                {submitting && (
-                  <div className="absolute right-4 load-spinner"></div>
+                {!submitting && (
+                  `Swap`
                 )}
+                {submitting && (
+                  <>{hash ? '' : `Swapping`}</>
+                )}
+                {submitting && hash  && (
+                  `Swapped`
+                )}
+                 
               </button>
             )}
           </div>
@@ -364,16 +371,12 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
           {/* progress bar  */}
           <div className="w-full bg-gray-200 rounded-full  h-2.5 ">
             <div
-              className="bg-blue-600 h-2.5 rounded-full"
-              style={{ width: "45%" }}
+              className={`bg-blue-600 h-2.5 rounded-full ${
+                submitting ? (hash ? "w-[100%]" : "w-[75%]") : "w-[50%]"
+              }`}
             />
           </div>
         </div>
-        {hash && (
-          <div>
-            <p>{hash}</p>
-          </div>
-        )}
       </div>
 
       {/* Transaction Status Card */}
@@ -454,12 +457,31 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
         </div>
 
         {hash && (
-          <div className=" h-[16%] rounded-2xl shadow-sm shadow-blue-500 min-h-[100px] flex justify-center items-center text-white min-w-[350px] bg-slate-900">
-            <button className="p-3 hover:bg-white hover:text-pink border-2 rounded-2xl border-white">
-              View Transaction{" "}
-            </button>
+          <div className="flex flex-col gap-1 h-[18%] rounded-2xl shadow-sm shadow-blue-500 min-h-[100px] flex justify-center items-center text-white min-w-[350px] bg-slate-900">
+            <div>
+              <button
+                onClick={() => {
+                  window.open(`https://layerzeroscan.com/tx/${hash}`);
+                }}
+                className="border-white border-2 w-[200px] rounded-xl p-3 text-lg hover:bg-black "
+              >
+                View on LayerZero
+              </button>
+            </div>
+            <div 
+              className="flex cursor-pointer gap-1 items-center text-blue-300 border-b-[2px] border-slate-900 hover:border-blue-900"
+              onClick={()=>{
+                setShowContinue?.(true);
+                setSubmitting?.(false);
+                setHash?.(undefined)
+              }}
+            >
+              <Image src="/doggyontheboxL.png" alt="doggy" width={25} height={25} />
+              <span className="mt-2">ReBox GHO</span>
+            </div>
           </div>
         )}
+
       </div>
     </main>
   );
