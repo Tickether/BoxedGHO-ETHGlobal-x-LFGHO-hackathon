@@ -130,11 +130,12 @@ const SendToYourself = ({ connectedAddress, publicClient, forOthers }: any) => {
 
   useEffect(() => {
     if (forOthers) {
-      setPayAddress(`0x${pastedAddress}`!);
+      setPayAddress(`0x${pastedAddress?.slice(2)}`!);
     } else {
       setPayAddress(connectedAddress!);
     }
   }, [pastedAddress, connectedAddress, forOthers]);
+  console.log(payAddress);
 
   const handlePaste = async () => {
     const clipboardText = await navigator.clipboard.readText();
