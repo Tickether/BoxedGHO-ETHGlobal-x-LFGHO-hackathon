@@ -1,6 +1,6 @@
 
 # What is 📦BoxedGHO ❓
-BoxedGHO is a web5 application that helps its users to Covert GHO & send it across any chain into any token using the Box & Smart contract wallet integration. Also, you can buy GHO tokens from us using web2 payment. You may now buy GHO tokens from us via web2 payment. We are utilizing the African web2 payment service Flutterwave on the front end to collect fiat payments and sell GHO to users. read "How it works" for more info  (All onramp transactions were tested on Sepolia.) 
+BoxedGHO is a Web2 🤝 Web3 application that helps its users to Covert GHO & send it across any chain into any token using the Box & Smart contract wallet integration. Also, you can buy GHO tokens from us using web2 payment. You may now buy GHO tokens from us via web2 payment. We are utilizing the African web2 payment service Flutterwave on the front end to collect fiat payments and sell GHO to users. read "How it works" for more info  (All onramp transactions were tested on Sepolia.) 
 
 ## Live Application
 
